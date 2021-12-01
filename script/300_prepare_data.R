@@ -10,89 +10,104 @@ info(
 
 # Load and check data ---------------------------------------------------------
 
-# data <- readRDS(input_file)
-# 
-# # Special treatment
-# data <- data %>%
-#   filter(bidding_zone %in% set_zones) %>%
-#   check_data() %>%
-#   mutate(series = paste0(series, " ", unit)) %>%
-#   select(-unit) %>%
-#   rename(BZN = bidding_zone) %>%
-#   rename(Value = value)
+input_frame <- readRDS(input_file)
+
+meta_frame <- input_frame %>%
+  select(-c(!!sym(index_id), !!sym(value_id))) %>%
+  distinct() %>%
+  mutate(series = make_names(x = "series", n = n())) %>%
+  select(series, everything())
+
+cols <- setdiff(
+  x = names(meta_frame),
+  y = "series"
+)
+
+main_frame <- left_join(
+  x = input_frame,
+  y = meta_frame,
+  by = cols) %>%
+  select("time", "series", everything())
 
 # Interpolate missing values --------------------------------------------------
 
-data <- data %>%
-  group_by(series_id) %>%
+main_frame <- main_frame %>%
+  group_by(!!sym(series_id)) %>%
   mutate(
-    Value = interpolate_missing(
-      x = Value,
+    !!sym(value_id) := interpolate_missing(
+      x = !!sym(value_id),
       period = period)) %>%
   ungroup()
 
 # Adjust outliers -------------------------------------------------------------
 
 if (outlier == TRUE) {
-  data <- data %>%
-    group_by(series_id) %>%
+  main_frame <- main_frame %>%
+    group_by(!!sym(series_id)) %>%
     mutate(
-      Value = smooth_outlier(
-        x = Value,
+      !!sym(value_id) := smooth_outlier(
+        x = !!sym(value_id),
         period = period)) %>%
     ungroup()
 }
 
-save(
-  object = data,
-  file = paste0(folder, "/", "data.rda")
-  )
+# Create split into training and testing --------------------------------------
 
-# Split data ------------------------------------------------------------------
-data <- split_data(
-  data = data,
-  n_init = n_init,
+split_frame <- make_split(
+  main = main_frame,
+  context = context,
+  type = type,
+  value = value,
   n_ahead = n_ahead,
-  mode = mode,
   n_skip = n_skip,
-  n_lag = n_lag
-  )
+  n_lag = n_lag,
+  mode = mode,
+  exceed = exceed
+)
 
-train <- data$train
-test <- data$test
+# Test run --------------------------------------------------------------------
 
-# Create model grid
-grid <- create_grid(data = train)
-
-# Reduce number of splits in grid for fast testing
+# Reduce number of series and splits in split_frame for fast testing
 if (test_run == TRUE) {
   
-  set.seed(123)
+  set.seed(test_seed)
   
   random_splits <- sample(
-    x = unique(grid$split),
-    size = 20
+    x = unique(split_frame[["split"]]),
+    size = n_test_splits,
+    replace = FALSE
   )
   
-  grid <- grid %>%
-    filter(split %in% random_splits)
+  random_series <- sample(
+    x = unique(split_frame[[series_id]]),
+    size = n_test_series,
+    replace = FALSE
+  )
+  
+  split_frame <- split_frame %>%
+    filter(split %in% random_splits) %>%
+    filter(!!sym(series_id) %in% random_series)
 }
+
+# Initialize future_frame (empty object to store forecasts) --------------------
+
+future_frame <- vector(
+  mode = "list",
+  length = length(models)
+)
+
+names(future_frame) <- models
 
 # Save objects ----------------------------------------------------------------
 
 save(
-  object = train,
-  file = paste0(folder, "/", "train.rda")
-  )
+  object = main_frame,
+  file = paste0(folder, "/", "main_frame.rda")
+)
 
 save(
-  object = test,
-  file = paste0(folder, "/", "test.rda")
-  )
-
-save(
-  object = grid,
-  file = paste0(folder, "/", "grid.rda")
+  object = split_frame,
+  file = paste0(folder, "/", "split_frame.rda")
   )
 
 info(
