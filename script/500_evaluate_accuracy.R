@@ -8,112 +8,92 @@ info(
 
 # Evaluate forecast accuracy ==================================================
 
-# Concatenate forecasts row-wise ----------------------------------------------
-fcst <- bind_rows(
-  fcst_esn,
-  fcst_snaive,
-  fcst_snaive2,
-  fcst_stl_naive,
-  fcst_stl_arima,
-  fcst_stl_ets,
-  fcst_expert,
-  fcst_dhr_arima,
-  fcst_dshw,
-  fcst_tbats,
-  fcst_elm,
-  fcst_fasster,
-  fcst_arima
-  )
+# Concatenate forecasts row-wise (flatten list) -------------------------------
+
+future_frame <- bind_rows(future_frame)
 
 
 # Check for failed models or forecasts and exclude them -----------------------
-mdls_failed <- fcst %>%
-  filter(is.na(.mean)) %>%
-  as_tibble() %>%
-  select(series_id, split, .model) %>%
-  distinct() %>%
-  mutate(id = paste(series_id, split, .model, sep = "_"))
 
-fcst <- fcst %>%
-  mutate(id = paste(series_id, split, .model, sep = "_")) %>%
+mdls_failed <- future_frame %>%
+  filter(is.na(point)) %>%
+  select(!!sym(series_id), split, model) %>%
+  distinct() %>%
+  mutate(id = paste(!!sym(series_id), split, model, sep = "_"))
+
+future_frame <- future_frame %>%
+  mutate(id = paste(!!sym(series_id), split, model, sep = "_")) %>%
   filter(id %out% mdls_failed$id) %>%
   select(-id)
 
-
 # Calculate forecast errors and percentage forecast errors --------------------
-error <- errors(
-  fcst = fcst,
-  test = test
-  )
 
-error_pct <- pct_errors(
-  fcst = fcst,
-  test = test
-  )
+error_frame <- make_errors(
+  future = future_frame,
+  main = main_frame,
+  context = context
+)
 
-# Estimate error metrics ------------------------------------------------------
+# Estimate accuracy metrics ------------------------------------------------------
 
-# Forecast horizon
-metrics_horizon <- error_metrics(
-  fcst = fcst,
-  test = test,
-  train = train,
-  period = max(period),
-  by = "horizon"
-  )
+# Accuracy by split
+accuracy_split <- make_accuracy(
+  future = future_frame,
+  main = main_frame,
+  dimension = "split",
+  benchmark = benchmark
+)
 
-# Split
-metrics_split <- error_metrics(
-  fcst = fcst,
-  test = test,
-  train = train,
-  period = max(period),
-  by = "split"
-  )
+# Accuracy by horizon
+accuracy_horizon <- make_accuracy(
+  future = future_frame,
+  main = main_frame,
+  dimension = "horizon",
+  benchmark = benchmark
+)
+
+accuracy_frame <- bind_rows(
+  accuracy_split,
+  accuracy_horizon
+)
 
 # Estimate overall mean of error metrics --------------------------------------
 
-set_metric <- "MAPE"
-set_zones <- unique(metrics_horizon$series_id)
-
-metrics_mean <- metrics_horizon %>%
+accuracy_mean <- accuracy_horizon %>%
   filter(metric == set_metric) %>%
-  group_by(series_id, .model) %>%
-  summarise(mean_group = round(mean(value, na.rm = TRUE), 3), .groups = "drop") %>%
+  group_by(!!sym(series_id), model) %>%
+  summarise(
+    mean_group = round(mean(value, na.rm = TRUE), 3),
+    .groups = "drop") %>%
   pivot_wider(
-    names_from = series_id,
+    names_from = !!sym(series_id),
+    # names_from = model,
     values_from = mean_group) %>%
   rowwise() %>%
-  mutate(Total = round(mean(c_across(-.model)), 3)) %>%
-  rename(Model = .model) %>%
+  mutate(total = round(mean(c_across(-model)), 3)) %>%
   ungroup() %>%
-  arrange(Total)
+  arrange(total)
 
 # Save objects ----------------------------------------------------------------
 
 save(
-  object = error,
-  file = paste0(folder, "/", "error.rda")
+  object = future_frame,
+  file = paste0(folder, "/", "future_frame.rda")
+)
+
+save(
+  object = error_frame,
+  file = paste0(folder, "/", "error_frame.rda")
   )
 
 save(
-  object = error_pct,
-  file = paste0(folder, "/", "error_pct.rda")
+  object = accuracy_frame,
+  file = paste0(folder, "/", "accuracy_frame.rda")
   )
 
 save(
-  object = metrics_horizon,
-  file = paste0(folder, "/", "metrics_horizon.rda")
-  )
-
-save(
-  object = metrics_split,
-  file = paste0(folder, "/", "metrics_split.rda")
-  )
-
-save(
-  object = metrics_mean,
-  file = paste0(folder, "/", "metrics_mean.rda")
+  object = accuracy_mean,
+  file = paste0(folder, "/", "accuracy_mean.rda")
 )
 
 info(
