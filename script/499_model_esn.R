@@ -3,7 +3,7 @@ if ("ESN" %in% models) {
   
   info(
     logger = logger,
-    message = "START  script/401_model_esn.R"
+    message = "START  script/499_model_esn.R"
   )
   
   .start <- Sys.time()
@@ -31,6 +31,7 @@ if ("ESN" %in% models) {
               dy = dy,
               dx = dx,
               inf_crit = inf_crit,
+              n_states = n_states,
               n_seed = n_seed,
               alpha = alpha,
               rho = rho,
@@ -71,28 +72,23 @@ if ("ESN" %in% models) {
     .f = ~{lst_esn[[.x]][["fcst_esn"]]
       })
   
-  # Save objects --------------------------------------------------------------
+  # Store forecasts in future_frame -------------------------------------------
+  
+  future_frame[["ESN"]] <- future_esn
+  rm(future_esn)
   
   # save(
   #   object = mdls_esn_tbl,
   #   file = paste0(folder, "/", "mdls_esn_tbl.rda")
   # )
   
-  save(
-    object = fcst_esn,
-    file = paste0(folder, "/", "fcst_esn.rda")
-  )
-  
   info(
     logger = logger,
     message = paste0(
-      "FINISH script/401_model_esn.R",
+      "FINISH script/499_model_esn.R",
       "\n",
       log_time(start = .start),
       "\n"
     )
   )
-
-  } else {
-  fcst_esn <- NULL
 }
