@@ -1,0 +1,55 @@
+
+if ("ETS" %in% models) {
+  
+  info(
+    logger = logger,
+    message = "START  script/409_model_ets.R"
+  )
+  
+  .start <- Sys.time()
+  
+  # ETS (Exponential Smoothing) ===============================================
+  
+  # Train and forecast models -------------------------------------------------
+  
+  with_progress({
+    p <- progressor(steps = nrow(split_frame))
+    future_ets <- future_map_dfr(
+      .x = seq_len(nrow(split_frame)),
+      .f = ~{
+        p()
+        # Slice training data according to split
+        train_frame <- slice_train(
+          main = main_frame,
+          split = split_frame[.x, ],
+          context = context)
+        # Convert to tsibble, model and forecast
+        fable_frame <- train_frame %>%
+          as_tsibble(
+            index = !!sym(index_id),
+            key = c(!!sym(series_id), split)) %>%
+          model("ETS" = ETS(!!sym(value_id))) %>%
+          forecast(h = n_ahead)
+        # Convert fable to future_frame
+        future_frame <- make_future(
+          fable = fable_frame,
+          context = context
+        )
+      })
+  })
+  
+  # Store forecasts in future_frame -------------------------------------------
+  
+  future_frame[["ETS"]] <- future_ets
+  rm(future_ets)
+  
+  info(
+    logger = logger,
+    message = paste0(
+      "FINISH script/409_model_ets.R",
+      "\n",
+      log_time(start = .start),
+      "\n"
+    )
+  )
+}
