@@ -60,15 +60,15 @@ models <- c(
   # "TSLM",
   # "ARIMA",
   # "ETS",
-  "DSHW",
+  # "DSHW",
   # "TBATS",
   # "DHR-ARIMA",
   "STL-NAIVE",
   "STL-ARIMA",
-  "STL-ETS",
+  "STL-ETS"
   # "ELM",
   # "FASSTER",
-  "EXPERT"
+  # "EXPERT",
   # "ESN"
   )
 

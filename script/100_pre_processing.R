@@ -28,7 +28,7 @@ suppressPackageStartupMessages({
 })
 
 # Create run name with date and time
-run_name <- create_name(primary = "output")
+run_name <- file_name(primary = "output")
 
 # Create subdirectory for output
 folder <- dir_create(path = paste0("output", "/",  run_name))

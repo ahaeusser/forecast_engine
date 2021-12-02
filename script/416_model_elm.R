@@ -22,8 +22,8 @@ if ("ELM" %in% models) {
         p()
         # Slice training data according to split
         train_frame <- slice_train(
-          main = main_frame,
-          split = split_frame[.x, ],
+          main_frame = main_frame,
+          split_frame = split_frame[.x, ],
           context = context)
         # Convert to tsibble, model and forecast
         fable_frame <- train_frame %>%

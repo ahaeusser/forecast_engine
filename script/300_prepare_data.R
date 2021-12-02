@@ -15,7 +15,7 @@ input_frame <- readRDS(input_file)
 meta_frame <- input_frame %>%
   select(-c(!!sym(index_id), !!sym(value_id))) %>%
   distinct() %>%
-  mutate(series = make_names(x = "series", n = n())) %>%
+  mutate(series = number_string(x = "series", n = n())) %>%
   select(series, everything())
 
 cols <- setdiff(
@@ -54,7 +54,7 @@ if (outlier == TRUE) {
 # Create split into training and testing --------------------------------------
 
 split_frame <- make_split(
-  main = main_frame,
+  main_frame = main_frame,
   context = context,
   type = type,
   value = value,

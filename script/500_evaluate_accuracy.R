@@ -29,8 +29,8 @@ future_frame <- future_frame %>%
 # Calculate forecast errors and percentage forecast errors --------------------
 
 error_frame <- make_errors(
-  future = future_frame,
-  main = main_frame,
+  future_frame = future_frame,
+  main_frame = main_frame,
   context = context
 )
 
@@ -38,16 +38,16 @@ error_frame <- make_errors(
 
 # Accuracy by split
 accuracy_split <- make_accuracy(
-  future = future_frame,
-  main = main_frame,
+  future_frame = future_frame,
+  main_frame = main_frame,
   dimension = "split",
   benchmark = benchmark
 )
 
 # Accuracy by horizon
 accuracy_horizon <- make_accuracy(
-  future = future_frame,
-  main = main_frame,
+  future_frame = future_frame,
+  main_frame = main_frame,
   dimension = "horizon",
   benchmark = benchmark
 )
