@@ -29,7 +29,7 @@ if ("DSHW" %in% models) {
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
           mutate(!!sym(value_id) := !!sym(value_id) + shift) %>%
-          model("DSHW" = DSHW(!!sym(value_id), periods = period)) %>%
+          model("DSHW" = DSHW(!!sym(value_id), periods = periods)) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(

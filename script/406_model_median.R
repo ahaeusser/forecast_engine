@@ -1,20 +1,20 @@
 
-if ("SNAIVE" %in% models) {
+if ("MEDIAN" %in% models) {
   
   info(
     logger = logger,
-    message = "START  script/403_model_snaive.R"
+    message = "START  script/406_model_median.R"
   )
   
   .start <- Sys.time()
   
-  # SNAIVE (seasonal naive forecast) ==========================================
+  # MEDIAN (median forecast) ======================================================
   
   # Train and forecast models -------------------------------------------------
   
   with_progress({
     p <- progressor(steps = nrow(split_frame))
-    future_snaive <- future_map_dfr(
+    future_median <- future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
         p()
@@ -28,7 +28,7 @@ if ("SNAIVE" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("SNAIVE" = SNAIVE(!!sym(value_id) ~ lag(max(periods)))) %>%
+          model("MEDIAN" = MEDIAN(!!sym(value_id))) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(
@@ -40,13 +40,13 @@ if ("SNAIVE" %in% models) {
   
   # Store forecasts in future_frame -------------------------------------------
   
-  future_frame[["SNAIVE"]] <- future_snaive
-  rm(future_snaive)
+  future_frame[["MEDIAN"]] <- future_median
+  rm(future_median)
   
   info(
     logger = logger,
     message = paste0(
-      "FINISH script/403_model_snaive.R",
+      "FINISH script/406_model_median.R",
       "\n",
       log_time(start = .start),
       "\n"

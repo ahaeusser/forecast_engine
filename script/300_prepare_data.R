@@ -36,7 +36,7 @@ main_frame <- main_frame %>%
   mutate(
     !!sym(value_id) := interpolate_missing(
       x = !!sym(value_id),
-      period = period)) %>%
+      periods = periods)) %>%
   ungroup()
 
 # Adjust outliers -------------------------------------------------------------
@@ -47,7 +47,7 @@ if (outlier == TRUE) {
     mutate(
       !!sym(value_id) := smooth_outlier(
         x = !!sym(value_id),
-        period = period)) %>%
+        periods = periods)) %>%
     ungroup()
 }
 

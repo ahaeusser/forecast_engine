@@ -12,10 +12,9 @@ info(
 
 future_frame <- bind_rows(future_frame)
 
-
 # Check for failed models or forecasts and exclude them -----------------------
 
-mdls_failed <- future_frame %>%
+models_failed <- future_frame %>%
   filter(is.na(point)) %>%
   select(!!sym(series_id), split, model) %>%
   distinct() %>%
@@ -23,7 +22,7 @@ mdls_failed <- future_frame %>%
 
 future_frame <- future_frame %>%
   mutate(id = paste(!!sym(series_id), split, model, sep = "_")) %>%
-  filter(id %out% mdls_failed$id) %>%
+  filter(id %out% models_failed$id) %>%
   select(-id)
 
 # Calculate forecast errors and percentage forecast errors --------------------
@@ -40,6 +39,7 @@ error_frame <- make_errors(
 accuracy_split <- make_accuracy(
   future_frame = future_frame,
   main_frame = main_frame,
+  context = context,
   dimension = "split",
   benchmark = benchmark
 )
@@ -48,6 +48,7 @@ accuracy_split <- make_accuracy(
 accuracy_horizon <- make_accuracy(
   future_frame = future_frame,
   main_frame = main_frame,
+  context = context,
   dimension = "horizon",
   benchmark = benchmark
 )

@@ -28,7 +28,7 @@ if ("EXPERT" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("EXPERT" = EXPERT(!!sym(value_id), periods = period)) %>%
+          model("EXPERT" = EXPERT(!!sym(value_id), periods = periods)) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(

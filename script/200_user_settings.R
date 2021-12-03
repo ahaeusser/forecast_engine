@@ -47,7 +47,7 @@ benchmark <- "SNAIVE"           # Benchmark method for rMAE
 
 # Modeling --------------------------------------------------------------------
 
-period <- c(24, 168)            # seasonal periods
+periods <- c(24, 168)           # seasonal periods
 outlier <- TRUE                 # outlier adjustment
 shift <- 200                    # constant shift to avoid negative values (DSHW)
 
@@ -57,18 +57,19 @@ models <- c(
   "SNAIVE",
   "SNAIVE2",
   # "MEAN",
+  # "MEDIAN",
   # "TSLM",
   # "ARIMA",
   # "ETS",
   # "DSHW",
   # "TBATS",
   # "DHR-ARIMA",
-  "STL-NAIVE",
+  # "STL-NAIVE",
   "STL-ARIMA",
-  "STL-ETS"
+  # "STL-ETS",
   # "ELM",
   # "FASSTER",
-  # "EXPERT",
+  "EXPERT"
   # "ESN"
   )
 
