@@ -1,20 +1,16 @@
 
-if ("ARIMA" %in% models) {
-  
-  info(
-    logger = logger,
-    message = "START  script/408_model_arima.R"
-  )
+if ("DSHW" %in% models) {
   
   .start <- Sys.time()
+  .step <- "311_model_dshw.R"
   
-  # ARIMA =====================================================================
+  # DSHW (Double Seasonal Holt-Winters) =======================================
   
   # Train and forecast models -------------------------------------------------
   
   with_progress({
     p <- progressor(steps = nrow(split_frame))
-    future_arima <- future_map_dfr(
+    future_dshw <- future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
         p()
@@ -28,28 +24,33 @@ if ("ARIMA" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("ARIMA" = ARIMA(!!sym(value_id))) %>%
+          mutate(!!sym(value_id) := !!sym(value_id) + shift) %>%
+          model("DSHW" = DSHW(!!sym(value_id), periods = periods)) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(
           fable = fable_frame,
-          context = context
-        )
+          context = context) %>%
+          mutate(point = point - shift)
       })
   })
   
   # Store forecasts in future_frame -------------------------------------------
   
-  future_frame[["ARIMA"]] <- future_arima
-  rm(future_arima)
+  future_frame[["DSHW"]] <- future_dshw
+  rm(future_dshw)
   
-  info(
-    logger = logger,
-    message = paste0(
-      "FINISH script/408_model_arima.R",
-      "\n",
-      log_time(start = .start),
-      "\n"
+  write_lines(
+    x = log_time(text = .step, start = .start),
+    file = glue("{folder}/{run_name}.txt"),
+    append = TRUE
+  )
+  
+  print(
+    log_time(
+      text = .step, 
+      start = .start,
+      ft_bold = TRUE
     )
   )
 }

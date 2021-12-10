@@ -1,20 +1,16 @@
 
-if ("SNAIVE" %in% models) {
-  
-  info(
-    logger = logger,
-    message = "START  script/403_model_snaive.R"
-  )
+if ("TBATS" %in% models) {
   
   .start <- Sys.time()
+  .step <- "312_model_tbats.R"
   
-  # SNAIVE (seasonal naive forecast) ==========================================
+  # TBATS (Trigonometric Box-Cox ARMA Trend and Season) =======================
   
   # Train and forecast models -------------------------------------------------
   
   with_progress({
     p <- progressor(steps = nrow(split_frame))
-    future_snaive <- future_map_dfr(
+    future_tbats <- future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
         p()
@@ -28,28 +24,31 @@ if ("SNAIVE" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("SNAIVE" = SNAIVE(!!sym(value_id) ~ lag(max(periods)))) %>%
+          model("TBATS" = TBATS(!!sym(value_id), periods = periods)) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(
           fable = fable_frame,
-          context = context
-        )
+          context = context)
       })
   })
   
   # Store forecasts in future_frame -------------------------------------------
   
-  future_frame[["SNAIVE"]] <- future_snaive
-  rm(future_snaive)
+  future_frame[["TBATS"]] <- future_tbats
+  rm(future_tbats)
   
-  info(
-    logger = logger,
-    message = paste0(
-      "FINISH script/403_model_snaive.R",
-      "\n",
-      log_time(start = .start),
-      "\n"
+  write_lines(
+    x = log_time(text = .step, start = .start),
+    file = glue("{folder}/{run_name}.txt"),
+    append = TRUE
+  )
+  
+  print(
+    log_time(
+      text = .step, 
+      start = .start,
+      ft_bold = TRUE
     )
   )
 }

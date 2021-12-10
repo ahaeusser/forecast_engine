@@ -1,20 +1,16 @@
 
-if ("FASSTER" %in% models) {
-  
-  info(
-    logger = logger,
-    message = "START  script/417_model_fasster.R"
-  )
+if ("DRIFT" %in% models) {
   
   .start <- Sys.time()
+  .step <- "302_model_drift.R"
   
-  # FASSTER ===================================================================
+  # DRIFT (random walk plus drift forecast) ===================================
   
   # Train and forecast models -------------------------------------------------
   
   with_progress({
     p <- progressor(steps = nrow(split_frame))
-    future_fasster <- future_map_dfr(
+    future_drift <- future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
         p()
@@ -28,27 +24,32 @@ if ("FASSTER" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("FASSTER" = FASSTER(!!sym(value_id) ~ trend(1) + fourier(periods[1], periods[1]/2) + fourier(periods[2], periods[1]/4))) %>%
+          model("DRIFT" = RW(!!sym(value_id) ~ drift())) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(
           fable = fable_frame,
-          context = context)
+          context = context
+        )
       })
   })
   
   # Store forecasts in future_frame -------------------------------------------
   
-  future_frame[["FASSTER"]] <- future_fasster
-  rm(future_fasster)
+  future_frame[["DRIFT"]] <- future_drift
+  rm(future_drift)
   
-  info(
-    logger = logger,
-    message = paste0(
-      "FINISH script/417_model_fasster.R",
-      "\n",
-      log_time(start = .start),
-      "\n"
+  write_lines(
+    x = log_time(text = .step, start = .start),
+    file = glue("{folder}/{run_name}.txt"),
+    append = TRUE
+  )
+  
+  print(
+    log_time(
+      text = .step, 
+      start = .start,
+      ft_bold = TRUE
     )
   )
 }

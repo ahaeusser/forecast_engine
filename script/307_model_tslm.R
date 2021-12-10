@@ -1,20 +1,16 @@
 
-if ("MEAN" %in% models) {
-  
-  info(
-    logger = logger,
-    message = "START  script/405_model_mean.R"
-  )
+if ("TSLM" %in% models) {
   
   .start <- Sys.time()
+  .step <- "307_model_tslm.R"
   
-  # MEAN (mean forecast) ======================================================
+  # TSLM (linear model with trend and season) =================================
   
   # Train and forecast models -------------------------------------------------
   
   with_progress({
     p <- progressor(steps = nrow(split_frame))
-    future_mean <- future_map_dfr(
+    future_tslm <- future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
         p()
@@ -28,7 +24,7 @@ if ("MEAN" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("MEAN" = MEAN(!!sym(value_id))) %>%
+          model("TSLM" = TSLM(!!sym(value_id) ~ trend() + season(max(periods)))) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(
@@ -40,16 +36,20 @@ if ("MEAN" %in% models) {
   
   # Store forecasts in future_frame -------------------------------------------
   
-  future_frame[["MEAN"]] <- future_mean
-  rm(future_mean)
+  future_frame[["TSLM"]] <- future_tslm
+  rm(future_tslm)
   
-  info(
-    logger = logger,
-    message = paste0(
-      "FINISH script/405_model_mean.R",
-      "\n",
-      log_time(start = .start),
-      "\n"
+  write_lines(
+    x = log_time(text = .step, start = .start),
+    file = glue("{folder}/{run_name}.txt"),
+    append = TRUE
+  )
+  
+  print(
+    log_time(
+      text = .step, 
+      start = .start,
+      ft_bold = TRUE
     )
   )
 }

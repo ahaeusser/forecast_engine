@@ -1,20 +1,16 @@
 
-if ("ETS" %in% models) {
-  
-  info(
-    logger = logger,
-    message = "START  script/409_model_ets.R"
-  )
+if ("MEAN" %in% models) {
   
   .start <- Sys.time()
+  .step <- "305_model_mean.R"
   
-  # ETS (Exponential Smoothing) ===============================================
+  # MEAN (mean forecast) ======================================================
   
   # Train and forecast models -------------------------------------------------
   
   with_progress({
     p <- progressor(steps = nrow(split_frame))
-    future_ets <- future_map_dfr(
+    future_mean <- future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
         p()
@@ -28,7 +24,7 @@ if ("ETS" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("ETS" = ETS(!!sym(value_id))) %>%
+          model("MEAN" = MEAN(!!sym(value_id))) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(
@@ -40,16 +36,20 @@ if ("ETS" %in% models) {
   
   # Store forecasts in future_frame -------------------------------------------
   
-  future_frame[["ETS"]] <- future_ets
-  rm(future_ets)
+  future_frame[["MEAN"]] <- future_mean
+  rm(future_mean)
   
-  info(
-    logger = logger,
-    message = paste0(
-      "FINISH script/409_model_ets.R",
-      "\n",
-      log_time(start = .start),
-      "\n"
+  write_lines(
+    x = log_time(text = .step, start = .start),
+    file = glue("{folder}/{run_name}.txt"),
+    append = TRUE
+  )
+  
+  print(
+    log_time(
+      text = .step, 
+      start = .start,
+      ft_bold = TRUE
     )
   )
 }

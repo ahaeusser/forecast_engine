@@ -1,20 +1,16 @@
 
-if ("EXPERT" %in% models) {
-  
-  info(
-    logger = logger,
-    message = "START  script/498_model_expert.R"
-  )
+if ("STL-ETS" %in% models) {
   
   .start <- Sys.time()
+  .step <- "316_model_stl_ets.R"
   
-  # EXPERT model ==============================================================
+  # STL-ARIMA (STL decomposition plus ETS forecast) ===========================
   
   # Train and forecast models -------------------------------------------------
   
   with_progress({
     p <- progressor(steps = nrow(split_frame))
-    future_expert <- future_map_dfr(
+    future_stl_ets <- future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
         p()
@@ -28,7 +24,7 @@ if ("EXPERT" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("EXPERT" = EXPERT(!!sym(value_id), periods = periods)) %>%
+          model("STL-ETS" = decomposition_model(STL(!!sym(value_id)), ETS(season_adjust ~ season("N")))) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(
@@ -39,16 +35,20 @@ if ("EXPERT" %in% models) {
   
   # Store forecasts in future_frame -------------------------------------------
   
-  future_frame[["EXPERT"]] <- future_expert
-  rm(future_expert)
+  future_frame[["STL-ETS"]] <- future_stl_ets
+  rm(future_stl_ets)
   
-  info(
-    logger = logger,
-    message = paste0(
-      "FINISH script/498_model_expert.R",
-      "\n",
-      log_time(start = .start),
-      "\n"
+  write_lines(
+    x = log_time(text = .step, start = .start),
+    file = glue("{folder}/{run_name}.txt"),
+    append = TRUE
+  )
+  
+  print(
+    log_time(
+      text = .step, 
+      start = .start,
+      ft_bold = TRUE
     )
   )
 }

@@ -1,12 +1,8 @@
 
 if ("ESN" %in% models) {
   
-  info(
-    logger = logger,
-    message = "START  script/499_model_esn.R"
-  )
-  
   .start <- Sys.time()
+  .step <- "399_model_esn.R"
   
   # ESN (Echo State Network) ==================================================
   
@@ -82,13 +78,17 @@ if ("ESN" %in% models) {
   #   file = paste0(folder, "/", "mdls_esn_tbl.rda")
   # )
   
-  info(
-    logger = logger,
-    message = paste0(
-      "FINISH script/499_model_esn.R",
-      "\n",
-      log_time(start = .start),
-      "\n"
+  write_lines(
+    x = log_time(text = .step, start = .start),
+    file = glue("{folder}/{run_name}.txt"),
+    append = TRUE
+  )
+  
+  print(
+    log_time(
+      text = .step, 
+      start = .start,
+      ft_bold = TRUE
     )
   )
 }

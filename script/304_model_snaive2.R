@@ -1,20 +1,16 @@
 
-if ("DHR-ARIMA" %in% models) {
-  
-  info(
-    logger = logger,
-    message = "START  script/412_model_dhr-arima.R"
-  )
+if ("SNAIVE2" %in% models) {
   
   .start <- Sys.time()
+  .step <- "304_model_snaive2.R"
   
-  # Dynamic harmonic regression with ARMA errors ==============================
+  # SNAIVE2 (seasonal naive forecast) =========================================
   
   # Train and forecast models -------------------------------------------------
   
   with_progress({
     p <- progressor(steps = nrow(split_frame))
-    future_dhr_arima <- future_map_dfr(
+    future_snaive2 <- future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
         p()
@@ -28,27 +24,32 @@ if ("DHR-ARIMA" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("DHR-ARIMA" = ARIMA(!!sym(value_id) ~ fourier(period[1], period[1]/2) + fourier(period[2], period[1]/4) + pdq(d = 0) + PDQ(0, 0, 0))) %>%
+          model("SNAIVE2" = SNAIVE2(!!sym(value_id))) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(
           fable = fable_frame,
-          context = context)
+          context = context
+        )
       })
   })
   
   # Store forecasts in future_frame -------------------------------------------
   
-  future_frame[["DHR-ARIMA"]] <- future_dhr_arima
-  rm(future_dhr_arima)
+  future_frame[["SNAIVE2"]] <- future_snaive2
+  rm(future_snaive2)
   
-  info(
-    logger = logger,
-    message = paste0(
-      "FINISH script/412_model_dhr-arima.R",
-      "\n",
-      log_time(start = .start),
-      "\n"
+  write_lines(
+    x = log_time(text = .step, start = .start),
+    file = glue("{folder}/{run_name}.txt"),
+    append = TRUE
+  )
+  
+  print(
+    log_time(
+      text = .step, 
+      start = .start,
+      ft_bold = TRUE
     )
   )
 }

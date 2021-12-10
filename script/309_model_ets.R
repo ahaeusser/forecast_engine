@@ -1,20 +1,16 @@
 
-if ("STL-ETS" %in% models) {
-  
-  info(
-    logger = logger,
-    message = "START  script/415_model_stl-ets.R"
-  )
+if ("ETS" %in% models) {
   
   .start <- Sys.time()
+  .step <- "309_model_ets.R"
   
-  # STL-ARIMA (STL decomposition plus ETS forecast) ===========================
+  # ETS (Exponential Smoothing) ===============================================
   
   # Train and forecast models -------------------------------------------------
   
   with_progress({
     p <- progressor(steps = nrow(split_frame))
-    future_stl_ets <- future_map_dfr(
+    future_ets <- future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
         p()
@@ -28,27 +24,32 @@ if ("STL-ETS" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("STL-ETS" = decomposition_model(STL(!!sym(value_id)), ETS(season_adjust ~ season("N")))) %>%
+          model("ETS" = ETS(!!sym(value_id))) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(
           fable = fable_frame,
-          context = context)
+          context = context
+        )
       })
   })
   
   # Store forecasts in future_frame -------------------------------------------
   
-  future_frame[["STL-ETS"]] <- future_stl_ets
-  rm(future_stl_ets)
+  future_frame[["ETS"]] <- future_ets
+  rm(future_ets)
   
-  info(
-    logger = logger,
-    message = paste0(
-      "FINISH script/415_model_stl-ets.R",
-      "\n",
-      log_time(start = .start),
-      "\n"
+  write_lines(
+    x = log_time(text = .step, start = .start),
+    file = glue("{folder}/{run_name}.txt"),
+    append = TRUE
+  )
+  
+  print(
+    log_time(
+      text = .step, 
+      start = .start,
+      ft_bold = TRUE
     )
   )
 }

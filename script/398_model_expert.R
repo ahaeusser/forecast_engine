@@ -1,20 +1,16 @@
 
-if ("TSLM" %in% models) {
-  
-  info(
-    logger = logger,
-    message = "START  script/407_model_tslm.R"
-  )
+if ("EXPERT" %in% models) {
   
   .start <- Sys.time()
+  .step <- "398_model_expert.R"
   
-  # TSLM (linear model with trend and season) =================================
+  # EXPERT model ==============================================================
   
   # Train and forecast models -------------------------------------------------
   
   with_progress({
     p <- progressor(steps = nrow(split_frame))
-    future_tslm <- future_map_dfr(
+    future_expert <- future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
         p()
@@ -28,28 +24,31 @@ if ("TSLM" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("TSLM" = TSLM(!!sym(value_id) ~ trend() + season(max(periods)))) %>%
+          model("EXPERT" = EXPERT(!!sym(value_id), periods = periods)) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(
           fable = fable_frame,
-          context = context
-        )
+          context = context)
       })
   })
   
   # Store forecasts in future_frame -------------------------------------------
   
-  future_frame[["TSLM"]] <- future_tslm
-  rm(future_tslm)
+  future_frame[["EXPERT"]] <- future_expert
+  rm(future_expert)
   
-  info(
-    logger = logger,
-    message = paste0(
-      "FINISH script/407_model_tslm.R",
-      "\n",
-      log_time(start = .start),
-      "\n"
+  write_lines(
+    x = log_time(text = .step, start = .start),
+    file = glue("{folder}/{run_name}.txt"),
+    append = TRUE
+  )
+  
+  print(
+    log_time(
+      text = .step, 
+      start = .start,
+      ft_bold = TRUE
     )
   )
 }
