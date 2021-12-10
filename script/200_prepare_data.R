@@ -1,10 +1,6 @@
 
-info(
-  logger = logger,
-  message = "START  script/300_prepare_data.R"
-)
-
 .start <- Sys.time()
+.step <- "200_prepare_data.R"
 
 # Data preparation ============================================================
 
@@ -110,12 +106,16 @@ save(
   file = paste0(folder, "/", "split_frame.rda")
   )
 
-info(
-  logger = logger,
-  message = paste0(
-    "FINISH script/300_prepare_data.R",
-    "\n",
-    log_time(start = .start),
-    "\n"
+write_lines(
+  x = log_time(text = .step, start = .start),
+  file = glue("{folder}/{run_name}.txt"),
+  append = TRUE
+)
+
+print(
+  log_time(
+    text = .step, 
+    start = .start,
+    ft_bold = TRUE
   )
 )

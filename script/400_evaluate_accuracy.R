@@ -1,10 +1,6 @@
 
-info(
-  logger = logger,
-  message = "START  script/500_evaluate_accuracy.R"
-)
-
 .start <- Sys.time()
+.step <- "400_evaluate_accuracy.R"
 
 # Evaluate forecast accuracy ==================================================
 
@@ -97,13 +93,16 @@ save(
   file = paste0(folder, "/", "accuracy_mean.rda")
 )
 
-info(
-  logger = logger,
-  message = paste0(
-    "FINISH script/500_evaluate_accuracy.R",
-    "\n",
-    log_time(start = .start),
-    "\n"
-  )
+write_lines(
+  x = log_time(text = .step, start = .start),
+  file = glue("{folder}/{run_name}.txt"),
+  append = TRUE
 )
 
+print(
+  log_time(
+    text = .step, 
+    start = .start,
+    ft_bold = TRUE
+  )
+)

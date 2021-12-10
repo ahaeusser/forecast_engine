@@ -1,8 +1,11 @@
 
+.start <- Sys.time()
+.step <- "100_pre_processing.R"
+
 # Pre-processing ==============================================================
 
 # Suppress warnings
-options(warn = -1)
+options(warn = set_warn)
 
 # Load relevant packages
 suppressPackageStartupMessages({
@@ -14,13 +17,11 @@ suppressPackageStartupMessages({
   library(future)
   library(progressr)
   library(pryr)
-  library(tictoc)
   library(furrr)
   library(tscv)
   # library(echos)
   # library(fasster)
   library(fs)
-  library(log4r)
   library(devtools)
   library(glue)
   library(progressr)
@@ -28,51 +29,32 @@ suppressPackageStartupMessages({
 })
 
 # Create run name with date and time
-run_name <- file_name(primary = "output")
+run_name <- file_name(primary = run_name)
 
 # Create subdirectory for output
-folder <- dir_create(path = paste0("output", "/",  run_name))
-
-# Create log file
-log_file <- file_create(path = paste0(folder, "/", run_name, ".txt"))
-
-# Start logging
-logger <- logger(
-  threshold = "INFO",
-  appenders = list(
-    file_appender(log_file),
-    console_appender()
-    )
-)
-
-info(
-  logger = logger,
-  message = paste0(
-    "\n",
-    log_header(),
-    "\n"
-    )
-)
-
-info(
-  logger = logger,
-  message = "START  script/100_pre_processing.R"
-)
-
-.start <- Sys.time()
-
-# Change default location and time
-Sys.setlocale("LC_TIME", "C")
+folder <- dir_create(path = glue("output/{run_name}"))
 
 # Parallel computing
 plan(multisession)
 
-info(
-  logger = logger,
-  message = paste0(
-    "FINISH script/100_pre_processing.R",
-    "\n",
-    log_time(start = .start),
-    "\n"
+write_lines(
+  x = log_platform(),
+  file = glue("{folder}/{run_name}.txt"),
+  append = TRUE
+)
+
+write_lines(
+  x = log_time(text = .step, start = .start),
+  file = glue("{folder}/{run_name}.txt"),
+  append = TRUE
+)
+
+print(log_platform(ft_bold = TRUE))
+
+print(
+  log_time(
+    text = .step, 
+    start = .start,
+    ft_bold = TRUE
   )
 )
