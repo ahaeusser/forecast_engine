@@ -7,23 +7,24 @@
 # Load and check data ---------------------------------------------------------
 
 input_frame <- readRDS(input_file)
+main_frame <- input_frame
 
-meta_frame <- input_frame %>%
-  select(-c(!!sym(index_id), !!sym(value_id))) %>%
-  distinct() %>%
-  mutate(series = number_string(x = "series", n = n())) %>%
-  select(series, everything())
-
-cols <- setdiff(
-  x = names(meta_frame),
-  y = "series"
-)
-
-main_frame <- left_join(
-  x = input_frame,
-  y = meta_frame,
-  by = cols) %>%
-  select("time", "series", everything())
+# meta_frame <- input_frame %>%
+#   select(-c(!!sym(index_id), !!sym(value_id))) %>%
+#   distinct() %>%
+#   mutate(series = number_string(x = "series", n = n())) %>%
+#   select(series, everything())
+# 
+# cols <- setdiff(
+#   x = names(meta_frame),
+#   y = "series"
+# )
+# 
+# main_frame <- left_join(
+#   x = input_frame,
+#   y = meta_frame,
+#   by = cols) %>%
+#   select("time", "series", everything())
 
 # Interpolate missing values --------------------------------------------------
 
@@ -68,21 +69,26 @@ if (test_run == TRUE) {
   
   set.seed(test_seed)
   
-  random_splits <- sample(
-    x = unique(split_frame[["split"]]),
-    size = n_test_splits,
-    replace = FALSE
-  )
-  
   random_series <- sample(
     x = unique(split_frame[[series_id]]),
     size = n_test_series,
     replace = FALSE
   )
   
+  random_splits <- sample(
+    x = unique(split_frame[["split"]]),
+    size = n_test_splits,
+    replace = FALSE
+  )
+  
   split_frame <- split_frame %>%
-    filter(split %in% random_splits) %>%
-    filter(!!sym(series_id) %in% random_series)
+    filter(!!sym(series_id) %in% random_series) %>%
+    filter(split %in% random_splits)
+  
+  # split_frame %>%
+  #   filter(!!sym(series_id) %in% random_series) %>%
+  #   group_by(!!sym(series_id)) %>%
+  #   summarise(n_split = max(split))
 }
 
 # Initialize future_frame (empty object to store forecasts) --------------------

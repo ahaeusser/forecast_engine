@@ -19,7 +19,7 @@ suppressPackageStartupMessages({
   library(pryr)
   library(furrr)
   library(tscv)
-  # library(echos)
+  library(echos)
   # library(fasster)
   library(fs)
   library(devtools)
