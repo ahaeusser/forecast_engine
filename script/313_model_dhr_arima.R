@@ -24,7 +24,7 @@ if ("DHR-ARIMA" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("DHR-ARIMA" = ARIMA(!!sym(value_id) ~ fourier(period[1], period[1]/2) + fourier(period[2], period[1]/4) + pdq(d = 0) + PDQ(0, 0, 0))) %>%
+          model("DHR-ARIMA" = ARIMA(!!sym(value_id) ~ fourier(periods[1], periods[1]/2) + fourier(periods[2], periods[1]/4) + pdq(d = 0) + PDQ(0, 0, 0))) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(
