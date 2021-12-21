@@ -1,7 +1,9 @@
 
 ### Main script for calculations ##############################################
 
-source("user_settings.R")
+source("user_settings_price.R")
+# source("user_settings_m4.R")
+
 source("script/100_pre_processing.R")
 source("script/200_prepare_data.R")
   source("script/301_model_naive.R")

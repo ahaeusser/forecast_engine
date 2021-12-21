@@ -18,8 +18,9 @@ context <- list(
 # Setup for run ---------------------------------------------------------------
 
 set_warn <- -1                  # warnings are suppressed
-run_name <- "test_run"          # set a name for the run
+run_name <- "test_price"        # set a name for the run
 Sys.setlocale("LC_TIME", "C")   # change default location and time
+
 test_run <- TRUE                # test run or full run?
 test_seed <- 123                # for reproducibility
 n_test_splits <- 10             # number of random splits for testing
@@ -47,7 +48,7 @@ outlier <- TRUE                 # outlier adjustment
 shift <- 200                    # constant shift to avoid negative values (DSHW)
 
 models <- c(
-  "NAIVE",
+  # "NAIVE",
   # "DRIFT",
   "SNAIVE",
   "SNAIVE2",
@@ -57,34 +58,34 @@ models <- c(
   # "ARIMA",
   # "ETS",
   # "THETA", 
-  # "DSHW",
-  # "TBATS",
-  # "DHR-ARIMA",
-  # "STL-NAIVE",
+  "DSHW",
+  "TBATS",
+  "DHR-ARIMA",
+  "STL-NAIVE",
   "STL-ARIMA",
-  # "STL-ETS",
-  # "ELM",
+  "STL-ETS",
+  "ELM",
   # "FASSTER",
-  "EXPERT"
-  # "ESN"
+  "EXPERT",
+  "ESN"
   )
 
 # Echo State Networks ---------------------------------------------------------
 
-# lags = list(c(1:6, 12))
-# fourier = NULL
-# xreg = NULL
-# dy = NULL
-# dx = 0
-# inf_crit = "aic"
-# n_seed = 42
-# alpha <- c(0.5, 0.7, 0.9, 1)
-# rho <- c(0.5, 1)
-# n_states <- 50
-# density = 0.1
-# scale_win = 0.5
-# scale_wres = 0.5
-# scale_inputs = c(-1, 1)
+lags <- list(c(1:12, 24, 168))
+fourier <- NULL
+xreg <- NULL
+dy <- NULL
+dx <- 0
+inf_crit <- "aic"
+n_seed <- 42
+alpha <- c(0.5, 0.7, 0.9, 1)
+rho <- c(0.5, 1)
+n_states <- 50
+density = 0.1
+scale_win = 0.5
+scale_wres = 0.5
+scale_inputs = c(-1, 1)
 
 # Save user_settings as list --------------------------------------------------
 
