@@ -58,32 +58,32 @@ models <- c(
   # "ARIMA",
   # "ETS",
   # "THETA", 
-  "DSHW",
-  "TBATS",
-  "DHR-ARIMA",
+  # "DSHW",
+  # "TBATS",
+  # "DHR-ARIMA",
   "STL-NAIVE",
   "STL-ARIMA",
   "STL-ETS",
-  "ELM",
+  # "ELM",
   # "FASSTER",
-  "EXPERT",
+  # "EXPERT",
   "ESN"
   )
 
 # Echo State Networks ---------------------------------------------------------
 
-lags <- list(c(1:12, 24, 168))
-fourier <- NULL
+lags <- list(c(1:23, 24, 168))
+fourier <- list(c(24, 168), c(12, 6))
 xreg <- NULL
 dy <- NULL
 dx <- 0
 inf_crit <- "aic"
 n_seed <- 42
-alpha <- c(0.5, 0.7, 0.9, 1)
-rho <- c(0.5, 1)
-n_states <- 50
+alpha <- c(0.25, 0.5, 0.75)
+rho <- c(0.5, 0.75, 1)
+n_states <- 200
 density = 0.1
-scale_win = 0.5
+scale_win = 0.1
 scale_wres = 0.5
 scale_inputs = c(-1, 1)
 
