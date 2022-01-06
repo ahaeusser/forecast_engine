@@ -46,6 +46,7 @@ benchmark <- "SNAIVE"           # Benchmark method for rMAE
 periods <- c(24, 168)           # seasonal periods
 outlier <- TRUE                 # outlier adjustment
 shift <- 200                    # constant shift to avoid negative values (DSHW)
+n_models <- 500                 # number of models for feature selection (ARX)
 
 models <- c(
   # "NAIVE",
@@ -66,6 +67,7 @@ models <- c(
   "STL-ETS",
   # "ELM",
   # "FASSTER",
+  "ARX",
   # "EXPERT",
   "ESN"
   )
@@ -81,9 +83,10 @@ inf_crit <- "aic"
 n_seed <- 42
 alpha <- c(0.25, 0.5, 0.75)
 rho <- c(0.5, 0.75, 1)
+rho <- c(0.75, 1, 1.5)
 n_states <- 200
 density = 0.1
-scale_win = 0.1
+scale_win = 0.5
 scale_wres = 0.5
 scale_inputs = c(-1, 1)
 
