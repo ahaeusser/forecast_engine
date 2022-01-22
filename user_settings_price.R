@@ -22,7 +22,7 @@ run_name <- "test_price"        # set a name for the run
 Sys.setlocale("LC_TIME", "C")   # change default location and time
 
 test_run <- TRUE                # test run or full run?
-test_seed <- 123                # for reproducibility
+test_seed <- 987                # for reproducibility
 n_test_splits <- 10             # number of random splits for testing
 n_test_series <- 4              # number of random series for testing
 
@@ -74,20 +74,19 @@ models <- c(
 
 # Echo State Networks ---------------------------------------------------------
 
-lags <- list(c(1:23, 24, 168))
+lags <- list(c(1:4, 24, 168))
 fourier <- list(c(24, 168), c(12, 6))
 xreg <- NULL
-dy <- NULL
-dx <- 0
+dy <- 1
+dx <- 1
 inf_crit <- "aic"
 n_seed <- 42
 alpha <- c(0.25, 0.5, 0.75)
 rho <- c(0.5, 0.75, 1)
-rho <- c(0.75, 1, 1.5)
-n_states <- 200
+n_states <- 100
 density = 0.1
-scale_win = 0.5
-scale_wres = 0.5
+scale_win = 1
+scale_wres = 1
 scale_inputs = c(-1, 1)
 
 # Save user_settings as list --------------------------------------------------
