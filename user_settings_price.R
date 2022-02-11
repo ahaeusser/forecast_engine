@@ -74,20 +74,22 @@ models <- c(
 
 # Echo State Networks ---------------------------------------------------------
 
-lags <- list(c(1:4, 24, 168))
+lags <- list(c(1:12, 24, 168))
 fourier <- list(c(24, 168), c(12, 6))
 xreg <- NULL
 dy <- 1
 dx <- 1
-inf_crit <- "aic"
+inf_crit <- "mse"
 n_seed <- 42
-alpha <- c(0.25, 0.5, 0.75)
-rho <- c(0.5, 0.75, 1)
-n_states <- 100
-density = 0.1
-scale_win = 1
-scale_wres = 1
-scale_inputs = c(-1, 1)
+alpha <- c(0.25, 0.75)
+rho <- c(0.5, 1)
+n_res <- 10
+n_states <- 50
+n_models <- 500
+density <- 0.1
+scale_win <- c(0.01, 1)
+scale_wres <- 1
+scale_inputs <- c(-1, 1)
 
 # Save user_settings as list --------------------------------------------------
 
