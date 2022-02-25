@@ -22,7 +22,7 @@ run_name <- "test_price"        # set a name for the run
 Sys.setlocale("LC_TIME", "C")   # change default location and time
 
 test_run <- TRUE                # test run or full run?
-test_seed <- 234                # for reproducibility
+test_seed <- 678                # for reproducibility
 n_test_splits <- 10             # number of random splits for testing
 n_test_series <- 4              # number of random series for testing
 
@@ -85,6 +85,7 @@ alpha <- 1
 rho <- 1
 n_states <- 500
 n_models <- 500
+n_vars <- 50
 density <- 0.1
 scale_win <- 0.5
 scale_wres <- 0.5
