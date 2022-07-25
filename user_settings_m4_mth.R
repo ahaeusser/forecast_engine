@@ -3,11 +3,11 @@
 
 # Data set --------------------------------------------------------------------
 
-input_file <- "data/elec_price.rds"
+input_file <- "data/M4_monthly_42_100_data.rds"
 
-series_id <- "bidding_zone"      # unique identifier for time series
+series_id <- "series"            # unique identifier for time series
 value_id <- "value"              # identifier for measurement column
-index_id <- "time"               # identifier for time index column
+index_id <- "index"              # identifier for time index column
 
 context <- list(
   series_id = series_id,
@@ -18,57 +18,55 @@ context <- list(
 # Setup for run ---------------------------------------------------------------
 
 set_warn <- -1                  # warnings are suppressed
-run_name <- "test_price"        # set a name for the run
+run_name <- "M4_monthly_42_100" # set a name for the run
 Sys.setlocale("LC_TIME", "C")   # change default location and time
 
-test_run <- TRUE                # test run or full run?
-test_seed <- 42                 # for reproducibility
+test_run <- FALSE               # test run or full run?
+test_seed <- 234                # for reproducibility
 n_test_splits <- 10             # number of random splits for testing
 n_test_series <- 4              # number of random series for testing
 
 # Setup for time series cross validation --------------------------------------
 
-type <- "first"                 # type of initial training window
-value <- 2400                   # size for initial training window
-n_ahead <- 24                   # size for testing window (forecast horizon)
-n_skip <- 23                    # skip 23 observations
+type <- "prob"                  # type of initial training window
+value <- 0.7                    # size for initial training window
+n_ahead <- 18                   # size for testing window (forecast horizon)
+n_skip <- 0                     # skip no observations
 n_lag <- 0                      # no lag
 mode <- "slide"                 # fixed window approach
 exceed <- FALSE                 # out-of-sample forecasts?
 
 # Evaluation of forecast accuracy ---------------------------------------------
 
-set_metric <- "rMAE"            # Accuracy metric for overall summary
+set_metric <- "MAPE"            # Accuracy metric for overall summary
 benchmark <- "SNAIVE"           # Benchmark method for rMAE
 
 # Modeling --------------------------------------------------------------------
 
-periods <- c(24, 168)           # seasonal periods
+periods <- c(12)                # seasonal periods
 outlier <- TRUE                 # outlier adjustment
 shift <- 200                    # constant shift to avoid negative values (DSHW)
-n_models <- 500                 # number of models for feature selection (ARX)
 
 models <- c(
-  # "NAIVE",
-  # "DRIFT",
+  "NAIVE",
+  "DRIFT",
   "SNAIVE",
-  "SNAIVE2",
+  # "SNAIVE2",
   # "MEAN",
   # "MEDIAN",
   # "TSLM",
   # "ARIMA",
   # "ETS",
-  # "THETA", 
+  "THETA", 
   # "DSHW",
   # "TBATS",
   # "DHR-ARIMA",
-  "STL-NAIVE",
-  "STL-ARIMA",
-  "STL-ETS",
+  # "STL-NAIVE",
+  # "STL-ARIMA",
+  # "STL-ETS",
   # "ELM",
   # "FASSTER",
-  # "ARX",
-  # "EXPERT",
+  # "EXPERT".
   "ESN"
   )
 
@@ -78,16 +76,16 @@ lags <- list(c(1))
 fourier <- NULL
 xreg <- NULL
 dy <- NULL
-dx <- 1
+dx <- 0
 inf_crit <- "aic"
 n_seed <- 42
-alpha <- 1
+alpha <- 1 # 1
 rho <- 1
-n_states <- 500
-n_models <- 500
-density <- 0.01
-scale_win <- 0.5
-scale_wres <- 0.5
+n_states <- 200 # 100
+n_models <- 200 # 100
+density <- 0.05 # 0.05
+scale_win <- 0.5 # 0.5
+scale_wres <- 0.5 # 0.5
 scale_inputs <- c(-1, 1)
 
 # Save user_settings as list --------------------------------------------------
