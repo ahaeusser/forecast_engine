@@ -56,20 +56,27 @@ accuracy_frame <- bind_rows(
 
 # Estimate overall mean of error metrics --------------------------------------
 
-accuracy_mean <- accuracy_horizon %>%
+mean_model <- accuracy_horizon %>%
   filter(metric == set_metric) %>%
   group_by(!!sym(series_id), model) %>%
   summarise(
-    mean_group = round(mean(value, na.rm = TRUE), 3),
+    value = round(mean(value, na.rm = TRUE), 3),
+    .groups = "drop")
+
+mean_total <- mean_model %>%
+  group_by(model) %>%
+  summarise(
+    value = round(mean(value, na.rm = TRUE), 3),
     .groups = "drop") %>%
+  mutate(!!sym(series_id) := "TOTAL")
+
+accuracy_mean <- bind_rows(
+  mean_model,
+  mean_total) %>%
   pivot_wider(
-    names_from = !!sym(series_id),
-    # names_from = model,
-    values_from = mean_group) %>%
-  rowwise() %>%
-  mutate(total = round(mean(c_across(-model)), 3)) %>%
-  ungroup() %>%
-  arrange(total)
+    names_from = model,
+    values_from = value
+  )
 
 # Save objects ----------------------------------------------------------------
 

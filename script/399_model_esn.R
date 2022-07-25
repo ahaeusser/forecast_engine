@@ -35,7 +35,6 @@ if ("ESN" %in% models) {
               inf_crit = inf_crit,
               n_states = n_states,
               n_models = n_models,
-              n_vars = n_vars,
               n_seed = n_seed,
               alpha = alpha,
               rho = rho,

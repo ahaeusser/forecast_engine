@@ -9,6 +9,9 @@
 input_frame <- readRDS(input_file)
 main_frame <- input_frame
 
+main_frame <- main_frame %>%
+  filter(series %out% c("A3349670A", "A3349754K"))
+
 # meta_frame <- input_frame %>%
 #   select(-c(!!sym(index_id), !!sym(value_id))) %>%
 #   distinct() %>%
