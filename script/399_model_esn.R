@@ -33,6 +33,7 @@ if ("ESN" %in% models) {
               dy = dy,
               dx = dx,
               inf_crit = inf_crit,
+              operator = operator,
               n_states = n_states,
               n_models = n_models,
               n_seed = n_seed,

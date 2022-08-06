@@ -54,17 +54,17 @@ models <- c(
   # "SNAIVE2",
   # "MEAN",
   # "MEDIAN",
-  # "TSLM",
+  "TSLM",
   "ARIMA",
   "ETS",
   "THETA", 
   # "DSHW",
-  # "TBATS",
+  "TBATS",
   # "DHR-ARIMA",
-  # "STL-NAIVE",
-  # "STL-ARIMA",
-  # "STL-ETS",
-  # "ELM",
+  "STL-NAIVE",
+  "STL-ARIMA",
+  "STL-ETS",
+  "ELM",
   # "FASSTER",
   # "EXPERT".
   "ESN"
@@ -78,11 +78,12 @@ xreg <- NULL
 dy <- NULL
 dx <- 0
 inf_crit <- "aic"
+operator <- "mode"
 n_seed <- 42
 alpha <- 1 # 1
 rho <- 1 # 1
 n_states <- 1000 # 100
-n_models <- 500 # 100
+n_models <- 1000 # 100
 density <- 0.05 # 0.05
 scale_win <- 0.5 # 0.5
 scale_wres <- 0.5 # 0.5
