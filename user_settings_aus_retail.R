@@ -21,15 +21,15 @@ set_warn <- -1                  # warnings are suppressed
 run_name <- "aus_retail"        # set a name for the run
 Sys.setlocale("LC_TIME", "C")   # change default location and time
 
-test_run <- TRUE               # test run or full run?
-test_seed <- 234                # for reproducibility
+test_run <- TRUE                # test run or full run?
+test_seed <- 42                 # for reproducibility
 n_test_splits <- 20             # number of random splits for testing
-n_test_series <- 5              # number of random series for testing
+n_test_series <- 10             # number of random series for testing
 
 # Setup for time series cross validation --------------------------------------
 
-type <- "prob"                  # type of initial training window
-value <- 0.7                    # size for initial training window
+type <- "first"                 # type of initial training window
+value <- 120                    # size for initial training window
 n_ahead <- 18                   # size for testing window (forecast horizon)
 n_skip <- 0                     # skip no observations
 n_lag <- 0                      # no lag
@@ -59,12 +59,12 @@ models <- c(
   "ETS",
   "THETA", 
   # "DSHW",
-  "TBATS",
+  # "TBATS",
   # "DHR-ARIMA",
   "STL-NAIVE",
   "STL-ARIMA",
   "STL-ETS",
-  "ELM",
+  # "ELM",
   # "FASSTER",
   # "EXPERT".
   "ESN"
@@ -77,17 +77,17 @@ fourier <- NULL
 xreg <- NULL
 dy <- NULL
 dx <- 0
-inf_crit <- "aic"
-operator <- "mode"
+inf_crit <- "bic"
+operator <- "mean"
 n_seed <- 42
 alpha <- 1 # 1
 rho <- 1 # 1
-n_states <- 1000 # 100
-n_models <- 1000 # 100
-density <- 0.05 # 0.05
+n_states <- 120 # 100
+n_models <- 240 # 100
+density <- 0.1 # 0.05
 scale_win <- 0.5 # 0.5
 scale_wres <- 0.5 # 0.5
-scale_inputs <- c(-1, 1)
+scale_inputs <- c(-0.5, 0.5)
 
 # Save user_settings as list --------------------------------------------------
 
