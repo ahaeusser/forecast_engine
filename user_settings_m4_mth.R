@@ -3,7 +3,7 @@
 
 # Data set --------------------------------------------------------------------
 
-input_file <- "data/M4_monthly_42_100_data.rds"
+input_file <- "data/M4_Monthly_42_1000_main.rds"
 
 series_id <- "series"            # unique identifier for time series
 value_id <- "value"              # identifier for measurement column
@@ -18,7 +18,7 @@ context <- list(
 # Setup for run ---------------------------------------------------------------
 
 set_warn <- -1                  # warnings are suppressed
-run_name <- "M4_monthly_42_100" # set a name for the run
+run_name <- "M4_Monthly_42_1000" # set a name for the run
 Sys.setlocale("LC_TIME", "C")   # change default location and time
 
 test_run <- FALSE               # test run or full run?
@@ -82,8 +82,8 @@ operator <- "mean"
 n_seed <- 42
 alpha <- 1
 rho <- 1
-n_states <- NULL # 120
-n_models <- NULL # 240
+n_states <- 100 # 120
+n_models <- 200 # 240
 density <- 0.1 # 0.05
 scale_win <- 0.5 # 0.5
 scale_wres <- 0.5 # 0.5

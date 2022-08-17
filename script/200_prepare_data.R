@@ -9,11 +9,9 @@
 input_frame <- readRDS(input_file)
 main_frame <- input_frame
 
-
-
 # Specific adjustments ........................................................
 
-data_summary <- main_frame %>%
+main_summary <- main_frame %>%
   summarise_data(context = context)
 
 # series_keep <- data_summary %>%
@@ -22,11 +20,6 @@ data_summary <- main_frame %>%
 # 
 # main_frame <- main_frame %>%
 #   filter(series %in% series_keep)
-
-# .............................................................................
-
-
-
 
 # main_frame <- main_frame %>%
 #   filter(series %out% c("A3349670A", "A3349754K"))
@@ -47,6 +40,9 @@ data_summary <- main_frame %>%
 #   y = meta_frame,
 #   by = cols) %>%
 #   select("time", "series", everything())
+
+# .............................................................................
+
 
 # Interpolate missing values --------------------------------------------------
 
@@ -133,6 +129,11 @@ save(
   object = split_frame,
   file = paste0(folder, "/", "split_frame.rda")
   )
+
+save(
+  object = main_summary,
+  file = paste0(folder, "/", "main_summary.rda")
+)
 
 write_lines(
   x = log_time(text = .step, start = .start),
