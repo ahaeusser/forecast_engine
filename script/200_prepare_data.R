@@ -16,12 +16,12 @@ main_frame <- input_frame
 data_summary <- main_frame %>%
   summarise_data(context = context)
 
-series_keep <- data_summary %>%
-  filter(n_obs == 441) %>%
-  pull(series)
-
-main_frame <- main_frame %>%
-  filter(series %in% series_keep)
+# series_keep <- data_summary %>%
+#   filter(n_obs == 441) %>%
+#   pull(series)
+# 
+# main_frame <- main_frame %>%
+#   filter(series %in% series_keep)
 
 # .............................................................................
 

@@ -2,7 +2,7 @@
 if ("FASSTER" %in% models) {
   
   .start <- Sys.time()
-  .step <- "318_model_fasster.R"
+  .step <- "396_model_fasster.R"
   
   # FASSTER ===================================================================
   

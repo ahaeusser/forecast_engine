@@ -1,9 +1,9 @@
 
 ### Main script for calculations ##############################################
 
-source("user_settings_aus_retail.R")
+# source("user_settings_aus_retail.R")
 # source("user_settings_price.R")
-# source("user_settings_m4_mth.R")
+source("user_settings_m4_mth.R")
 # source("user_settings_m4_daily.R")
 
 source("script/100_pre_processing.R")
@@ -25,7 +25,9 @@ source("script/200_prepare_data.R")
   source("script/315_model_stl_arima.R")
   source("script/316_model_stl_ets.R")
   source("script/317_model_elm.R")
-  source("script/318_model_fasster.R")
+  source("script/318_model_mlp.R")
+  source("script/319_model_nnetar.R")
+  source("script/396_model_fasster.R")
   source("script/397_model_arx.R")
   source("script/398_model_expert.R")
   source("script/399_model_esn.R")

@@ -23,8 +23,8 @@ Sys.setlocale("LC_TIME", "C")   # change default location and time
 
 test_run <- TRUE                # test run or full run?
 test_seed <- 42                 # for reproducibility
-n_test_splits <- 20             # number of random splits for testing
-n_test_series <- 10             # number of random series for testing
+n_test_splits <- 10             # number of random splits for testing
+n_test_series <- 5              # number of random series for testing
 
 # Setup for time series cross validation --------------------------------------
 
@@ -51,22 +51,18 @@ models <- c(
   "NAIVE",
   "DRIFT",
   "SNAIVE",
-  # "SNAIVE2",
-  # "MEAN",
-  # "MEDIAN",
+  "MEAN",
   "TSLM",
   "ARIMA",
   "ETS",
   "THETA", 
-  # "DSHW",
-  # "TBATS",
-  # "DHR-ARIMA",
+  "TBATS",
   "STL-NAIVE",
   "STL-ARIMA",
   "STL-ETS",
-  # "ELM",
-  # "FASSTER",
-  # "EXPERT".
+  "ELM",
+  "MLP",
+  "NNETAR",
   "ESN"
   )
 
