@@ -21,10 +21,10 @@ set_warn <- -1                  # warnings are suppressed
 run_name <- "M4_Monthly_42_1000" # set a name for the run
 Sys.setlocale("LC_TIME", "C")   # change default location and time
 
-test_run <- FALSE               # test run or full run?
+test_run <- TRUE                # test run or full run?
 test_seed <- 234                # for reproducibility
-n_test_splits <- 10             # number of random splits for testing
-n_test_series <- 10             # number of random series for testing
+n_test_splits <- 1              # number of random splits for testing
+n_test_series <- 5              # number of random series for testing
 
 # Setup for time series cross validation --------------------------------------
 
@@ -44,7 +44,7 @@ benchmark <- "NAIVE"           # Benchmark method for rMAE
 # Modeling --------------------------------------------------------------------
 
 periods <- c(12)                # seasonal periods
-outlier <- TRUE                 # outlier adjustment
+outlier <- FALSE                 # outlier adjustment
 shift <- 200                    # constant shift to avoid negative values (DSHW)
 
 models <- c(
@@ -54,17 +54,19 @@ models <- c(
   # "SNAIVE2",
   # "MEAN",
   # "MEDIAN",
-  # "TSLM",
+  "TSLM",
   "ARIMA",
   "ETS",
   "THETA", 
   # "DSHW",
   # "TBATS",
   # "DHR-ARIMA",
-  "STL-NAIVE",
-  "STL-ARIMA",
-  "STL-ETS",
+  # "STL-NAIVE",
+  # "STL-ARIMA",
+  # "STL-ETS",
   # "ELM",
+  "NNETAR",
+  "PROPHET",
   # "FASSTER",
   # "EXPERT".
   "ESN"
