@@ -3,7 +3,7 @@
 
 # Data set --------------------------------------------------------------------
 
-input_file <- "data/M4_Monthly_42_2400_main.rds"
+input_file <- "data/M4_Quarterly_42_1200_main.rds"
 
 series_id <- "series"             # unique identifier for time series
 value_id <- "value"               # identifier for measurement column
@@ -18,7 +18,7 @@ context <- list(
 # Setup for run ---------------------------------------------------------------
 
 set_warn <- -1                    # warnings are suppressed
-run_name <- "M4_Monthly_42_2400"  # set a name for the run
+run_name <- "M4_Quarterly_42_1200"  # set a name for the run
 Sys.setlocale("LC_TIME", "C")     # change default location and time
 
 test_run <- FALSE                 # test run or full run?
@@ -29,8 +29,8 @@ n_test_series <- 5                # number of random series for testing
 # Setup for time series cross validation --------------------------------------
 
 type <- "last"                    # type of initial training window
-value <- 17                       # size for initial training window
-n_ahead <- 18                     # size for testing window (forecast horizon)
+value <- 7                       # size for initial training window
+n_ahead <- 8                     # size for testing window (forecast horizon)
 n_skip <- 0                       # skip no observations
 n_lag <- 0                        # no lag
 mode <- "slide"                   # fixed window approach
@@ -43,8 +43,8 @@ benchmark <- "NAIVE"              # Benchmark method for rMAE
 
 # Modeling --------------------------------------------------------------------
 
-periods <- c(12)                  # seasonal periods
-outlier <- TRUE                   # outlier adjustment
+periods <- c(4)                  # seasonal periods
+outlier <- TRUE                  # outlier adjustment
 shift <- 200                      # constant shift to avoid negative values (DSHW)
 
 models <- c(
@@ -66,7 +66,7 @@ models <- c(
   # "STL-ETS",
   # "ELM",
   # "NNETAR",
-  # "PROPHET",
+  "PROPHET",
   # "FASSTER",
   # "EXPERT".
   "ESN"
@@ -84,8 +84,8 @@ operator <- "mean"
 n_seed <- 42
 alpha <- 1
 rho <- 1
-n_states <- 100 # 120
-n_models <- 200 # 240
+n_states <- 40 # 120
+n_models <- 80 # 240
 density <- 0.1 # 0.05
 scale_win <- 0.5 # 0.5
 scale_wres <- 0.5 # 0.5
