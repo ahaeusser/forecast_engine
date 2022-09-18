@@ -65,8 +65,8 @@ models <- c(
   # "STL-ARIMA",
   # "STL-ETS",
   # "ELM",
-  # "NNETAR",
-  # "PROPHET",
+  "NNETAR",
+  "PROPHET",
   # "FASSTER",
   # "EXPERT".
   "ESN"
