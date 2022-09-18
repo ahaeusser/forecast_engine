@@ -24,7 +24,7 @@ Sys.setlocale("LC_TIME", "C")     # change default location and time
 test_run <- FALSE                 # test run or full run?
 test_seed <- 234                  # for reproducibility
 n_test_splits <- 1                # number of random splits for testing
-n_test_series <- 5                # number of random series for testing
+n_test_series <- 10               # number of random series for testing
 
 # Setup for time series cross validation --------------------------------------
 
@@ -80,7 +80,6 @@ xreg <- NULL
 dy <- NULL
 dx <- 0
 inf_crit <- "bic"
-operator <- "mean"
 n_seed <- 42
 alpha <- 1
 rho <- 1
