@@ -86,7 +86,7 @@ alpha <- 1
 rho <- 1
 n_states <- 40 # 120
 n_models <- 80 # 240
-density <- 0.1 # 0.05
+density <- 0.2 # 0.05
 lambda <- c(1e-4, 2)
 scale_win <- 0.5 # 0.5
 scale_wres <- 0.5 # 0.5
