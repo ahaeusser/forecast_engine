@@ -21,7 +21,7 @@ set_warn <- -1                    # warnings are suppressed
 run_name <- "M4_Monthly_42_2400"  # set a name for the run
 Sys.setlocale("LC_TIME", "C")     # change default location and time
 
-test_run <- FALSE                 # test run or full run?
+test_run <- TRUE                 # test run or full run?
 test_seed <- 234                  # for reproducibility
 n_test_splits <- 1                # number of random splits for testing
 n_test_series <- 10               # number of random series for testing
@@ -65,8 +65,8 @@ models <- c(
   # "STL-ARIMA",
   # "STL-ETS",
   # "ELM",
-  "NNETAR",
-  "PROPHET",
+  # "NNETAR",
+  # "PROPHET",
   # "FASSTER",
   # "EXPERT".
   "ESN"
@@ -86,6 +86,7 @@ rho <- 1
 n_states <- 100 # 120
 n_models <- 200 # 240
 density <- 0.1 # 0.05
+lambda <- c(1e-4, 1)
 scale_win <- 0.5 # 0.5
 scale_wres <- 0.5 # 0.5
 scale_inputs <- c(-0.5, 0.5)

@@ -39,6 +39,7 @@ if ("ESN" %in% models) {
               alpha = alpha,
               rho = rho,
               density = density,
+              lambda = lambda,
               scale_win = scale_win,
               scale_wres = scale_wres,
               scale_inputs = scale_inputs)) %>%
