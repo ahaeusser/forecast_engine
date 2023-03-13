@@ -21,10 +21,10 @@ set_warn <- -1                    # warnings are suppressed
 run_name <- "M4_Monthly_42_2400"  # set a name for the run
 Sys.setlocale("LC_TIME", "C")     # change default location and time
 
-test_run <- TRUE                 # test run or full run?
+test_run <- TRUE                  # test run or full run?
 test_seed <- 234                  # for reproducibility
 n_test_splits <- 1                # number of random splits for testing
-n_test_series <- 10               # number of random series for testing
+n_test_series <- 20               # number of random series for testing
 
 # Setup for time series cross validation --------------------------------------
 
@@ -38,7 +38,7 @@ exceed <- FALSE                   # out-of-sample forecasts?
 
 # Evaluation of forecast accuracy ---------------------------------------------
 
-set_metric <- "MAPE"              # Accuracy metric for overall summary
+set_metric <- "sMAPE"              # Accuracy metric for overall summary
 benchmark <- "NAIVE"              # Benchmark method for rMAE
 
 # Modeling --------------------------------------------------------------------
@@ -83,10 +83,10 @@ inf_crit <- "bic"
 n_seed <- 42
 alpha <- 1
 rho <- 1
-n_states <- 100 # 120
-n_models <- 200 # 240
-density <- 0.2 # 0.05
-lambda <- c(1e-4, 1)
+n_states <- NULL # 100
+n_models <- NULL # 200
+density <- 0.5 # 0.05
+lambda <- c(1e-4, 2)
 scale_win <- 0.5 # 0.5
 scale_wres <- 0.5 # 0.5
 scale_inputs <- c(-0.5, 0.5)
