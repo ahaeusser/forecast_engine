@@ -1,6 +1,6 @@
 
 .start <- Sys.time()
-.step <- "400_evaluate_accuracy.R"
+.step <- "400_prepare_output.R"
 
 # Evaluate forecast accuracy ==================================================
 
@@ -78,6 +78,20 @@ accuracy_mean <- bind_rows(
     values_from = value
   )
 
+# Evaluate run-time ===========================================================
+
+# Concatenate run-times row-wise (flatten list) -------------------------------
+
+time_frame <- bind_rows(time_frame)
+time_frame <- time_frame %>%
+  pivot_longer(
+    cols = everything(),
+    names_to = "model",
+    values_to = "value") %>%
+  mutate(unit = "[secs]") %>%
+  mutate(value = round(value, digits = 3)) %>%
+  arrange(value)
+
 # Save objects ----------------------------------------------------------------
 
 save(
@@ -98,6 +112,11 @@ save(
 save(
   object = accuracy_mean,
   file = paste0(folder, "/", "accuracy_mean.rda")
+)
+
+save(
+  object = time_frame,
+  file = paste0(folder, "/", "time_frame.rda")
 )
 
 write_lines(

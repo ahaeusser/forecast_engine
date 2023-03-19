@@ -1,6 +1,6 @@
 
 .start <- Sys.time()
-.step <- "200_prepare_data.R"
+.step <- "200_prepare_input.R"
 
 # Data preparation ============================================================
 
@@ -13,33 +13,6 @@ main_frame <- input_frame
 
 main_summary <- main_frame %>%
   summarise_data(context = context)
-
-# series_keep <- data_summary %>%
-#   filter(n_obs == 441) %>%
-#   pull(series)
-# 
-# main_frame <- main_frame %>%
-#   filter(series %in% series_keep)
-
-# main_frame <- main_frame %>%
-#   filter(series %out% c("A3349670A", "A3349754K"))
-
-# meta_frame <- input_frame %>%
-#   select(-c(!!sym(index_id), !!sym(value_id))) %>%
-#   distinct() %>%
-#   mutate(series = number_string(x = "series", n = n())) %>%
-#   select(series, everything())
-# 
-# cols <- setdiff(
-#   x = names(meta_frame),
-#   y = "series"
-# )
-# 
-# main_frame <- left_join(
-#   x = input_frame,
-#   y = meta_frame,
-#   by = cols) %>%
-#   select("time", "series", everything())
 
 # .............................................................................
 
@@ -102,11 +75,6 @@ if (test_run == TRUE) {
   split_frame <- split_frame %>%
     filter(!!sym(series_id) %in% random_series) %>%
     filter(split %in% random_splits)
-  
-  # split_frame %>%
-  #   filter(!!sym(series_id) %in% random_series) %>%
-  #   group_by(!!sym(series_id)) %>%
-  #   summarise(n_split = max(split))
 }
 
 # Initialize future_frame (empty object to store forecasts) --------------------
@@ -117,6 +85,15 @@ future_frame <- vector(
 )
 
 names(future_frame) <- models
+
+# Initialize time_frame (empty object to store run time) ----------------------
+
+time_frame <- vector(
+  mode = "list",
+  length = length(models)
+)
+
+names(time_frame) <- models
 
 # Save objects ----------------------------------------------------------------
 
