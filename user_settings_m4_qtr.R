@@ -62,10 +62,11 @@ models <- c(
   # "STL-ARIMA",
   # "STL-ETS",
   # "ELM",
-  "NNETAR",
-  "PROPHET",
+  # "MLP",
+  # "NNETAR",
+  # "PROPHET",
   "ESN"
-  )
+)
 
 # Echo State Networks ---------------------------------------------------------
 
