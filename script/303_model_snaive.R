@@ -39,6 +39,15 @@ if ("SNAIVE" %in% models) {
   future_frame[["SNAIVE"]] <- future_snaive
   rm(future_snaive)
   
+  # Store run time in time_frame ----------------------------------------------
+  time_frame[["SNAIVE"]] <- as.numeric(
+    difftime(
+      time1 = Sys.time(),
+      time2 = .start, 
+      units = "secs"
+    )
+  )
+  
   write_lines(
     x = log_time(text = .step, start = .start),
     file = glue("{folder}/{run_name}.txt"),

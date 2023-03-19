@@ -39,6 +39,15 @@ if ("ARIMA" %in% models) {
   future_frame[["ARIMA"]] <- future_arima
   rm(future_arima)
   
+  # Store run time in time_frame ----------------------------------------------
+  time_frame[["ARIMA"]] <- as.numeric(
+    difftime(
+      time1 = Sys.time(),
+      time2 = .start, 
+      units = "secs"
+    )
+  )
+  
   write_lines(
     x = log_time(text = .step, start = .start),
     file = glue("{folder}/{run_name}.txt"),

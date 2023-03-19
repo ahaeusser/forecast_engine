@@ -39,6 +39,15 @@ if ("NAIVE" %in% models) {
   future_frame[["NAIVE"]] <- future_naive
   rm(future_naive)
   
+  # Store run time in time_frame ----------------------------------------------
+  time_frame[["NAIVE"]] <- as.numeric(
+    difftime(
+      time1 = Sys.time(),
+      time2 = .start, 
+      units = "secs"
+    )
+  )
+  
   write_lines(
     x = log_time(
       text = .step, 

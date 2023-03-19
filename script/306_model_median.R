@@ -39,6 +39,15 @@ if ("MEDIAN" %in% models) {
   future_frame[["MEDIAN"]] <- future_median
   rm(future_median)
   
+  # Store run time in time_frame ----------------------------------------------
+  time_frame[["MEDIAN"]] <- as.numeric(
+    difftime(
+      time1 = Sys.time(),
+      time2 = .start, 
+      units = "secs"
+    )
+  )
+  
   write_lines(
     x = log_time(text = .step, start = .start),
     file = glue("{folder}/{run_name}.txt"),

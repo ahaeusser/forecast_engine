@@ -41,6 +41,15 @@ if ("PROPHET" %in% models) {
   future_frame[["PROPHET"]] <- future_prophet
   rm(future_prophet)
   
+  # Store run time in time_frame ----------------------------------------------
+  time_frame[["PROPHET"]] <- as.numeric(
+    difftime(
+      time1 = Sys.time(),
+      time2 = .start, 
+      units = "secs"
+    )
+  )
+  
   write_lines(
     x = log_time(text = .step, start = .start),
     file = glue("{folder}/{run_name}.txt"),

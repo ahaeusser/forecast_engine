@@ -39,6 +39,15 @@ if ("THETA" %in% models) {
   future_frame[["THETA"]] <- future_theta
   rm(future_theta)
   
+  # Store run time in time_frame ----------------------------------------------
+  time_frame[["THETA"]] <- as.numeric(
+    difftime(
+      time1 = Sys.time(),
+      time2 = .start, 
+      units = "secs"
+    )
+  )
+  
   write_lines(
     x = log_time(text = .step, start = .start),
     file = glue("{folder}/{run_name}.txt"),

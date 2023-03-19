@@ -38,6 +38,15 @@ if ("STL-ETS" %in% models) {
   future_frame[["STL-ETS"]] <- future_stl_ets
   rm(future_stl_ets)
   
+  # Store run time in time_frame ----------------------------------------------
+  time_frame[["STL-ETS"]] <- as.numeric(
+    difftime(
+      time1 = Sys.time(),
+      time2 = .start, 
+      units = "secs"
+    )
+  )
+  
   write_lines(
     x = log_time(text = .step, start = .start),
     file = glue("{folder}/{run_name}.txt"),

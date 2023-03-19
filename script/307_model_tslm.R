@@ -39,6 +39,15 @@ if ("TSLM" %in% models) {
   future_frame[["TSLM"]] <- future_tslm
   rm(future_tslm)
   
+  # Store run time in time_frame ----------------------------------------------
+  time_frame[["TSLM"]] <- as.numeric(
+    difftime(
+      time1 = Sys.time(),
+      time2 = .start, 
+      units = "secs"
+    )
+  )
+  
   write_lines(
     x = log_time(text = .step, start = .start),
     file = glue("{folder}/{run_name}.txt"),

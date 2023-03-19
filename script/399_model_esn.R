@@ -58,10 +58,14 @@ if ("ESN" %in% models) {
   future_frame[["ESN"]] <- future_esn
   rm(future_esn)
   
-  # save(
-  #   object = mdls_esn_tbl,
-  #   file = paste0(folder, "/", "mdls_esn_tbl.rda")
-  # )
+  # Store run time in time_frame ----------------------------------------------
+  time_frame[["ESN"]] <- as.numeric(
+    difftime(
+      time1 = Sys.time(),
+      time2 = .start, 
+      units = "secs"
+    )
+  )
   
   write_lines(
     x = log_time(text = .step, start = .start),

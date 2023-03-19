@@ -39,6 +39,15 @@ if ("MEAN" %in% models) {
   future_frame[["MEAN"]] <- future_mean
   rm(future_mean)
   
+  # Store run time in time_frame ----------------------------------------------
+  time_frame[["MEAN"]] <- as.numeric(
+    difftime(
+      time1 = Sys.time(),
+      time2 = .start, 
+      units = "secs"
+    )
+  )
+  
   write_lines(
     x = log_time(text = .step, start = .start),
     file = glue("{folder}/{run_name}.txt"),

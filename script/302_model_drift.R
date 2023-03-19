@@ -39,6 +39,15 @@ if ("DRIFT" %in% models) {
   future_frame[["DRIFT"]] <- future_drift
   rm(future_drift)
   
+  # Store run time in time_frame ----------------------------------------------
+  time_frame[["DRIFT"]] <- as.numeric(
+    difftime(
+      time1 = Sys.time(),
+      time2 = .start, 
+      units = "secs"
+    )
+  )
+  
   write_lines(
     x = log_time(text = .step, start = .start),
     file = glue("{folder}/{run_name}.txt"),
