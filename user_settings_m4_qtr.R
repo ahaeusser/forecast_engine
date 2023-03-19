@@ -51,24 +51,19 @@ models <- c(
   "NAIVE",
   "DRIFT",
   "SNAIVE",
-  # "SNAIVE2",
   # "MEAN",
   # "MEDIAN",
   "TSLM",
   "ARIMA",
   "ETS",
   "THETA", 
-  # "DSHW",
   # "TBATS",
-  # "DHR-ARIMA",
   # "STL-NAIVE",
   # "STL-ARIMA",
   # "STL-ETS",
   # "ELM",
   "NNETAR",
   "PROPHET",
-  # "FASSTER",
-  # "EXPERT".
   "ESN"
   )
 

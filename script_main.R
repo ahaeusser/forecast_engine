@@ -1,14 +1,11 @@
 
 ### Main script for calculations ##############################################
 
-# source("user_settings_aus_retail.R")
-# source("user_settings_price.R")
 source("user_settings_m4_mth.R")
 # source("user_settings_m4_qtr.R")
-# source("user_settings_m4_daily.R")
 
 source("script/100_pre_processing.R")
-source("script/200_prepare_data.R")
+source("script/200_prepare_input.R")
   source("script/301_model_naive.R")
   source("script/302_model_drift.R")
   source("script/303_model_snaive.R")
@@ -33,5 +30,5 @@ source("script/200_prepare_data.R")
   source("script/397_model_arx.R")
   source("script/398_model_expert.R")
   source("script/399_model_esn.R")
-source("script/400_evaluate_accuracy.R")
+source("script/400_prepare_output.R")
 source("script/500_post_processing.R")
