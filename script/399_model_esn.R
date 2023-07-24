@@ -24,25 +24,7 @@ if ("ESN" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model(
-            "ESN" = ESN(
-              !!sym(value_id),
-              lags = lags,
-              fourier = fourier,
-              xreg = xreg,
-              dy = dy,
-              dx = dx,
-              inf_crit = inf_crit,
-              n_states = n_states,
-              n_models = n_models,
-              n_seed = n_seed,
-              alpha = alpha,
-              rho = rho,
-              density = density,
-              lambda = lambda,
-              scale_win = scale_win,
-              scale_wres = scale_wres,
-              scale_inputs = scale_inputs)) %>%
+          model("ESN" = ESN(!!sym(value_id))) %>%
           forecast(h = n_ahead)
         
         # Convert fable to future_frame

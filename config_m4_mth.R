@@ -21,7 +21,7 @@ set_warn <- -1                    # warnings are suppressed
 run_name <- "M4_Monthly_Sample"   # set a name for the run
 Sys.setlocale("LC_TIME", "C")     # change default location and time
 
-test_run <- FALSE                 # test run or full run?
+test_run <- TRUE                 # test run or full run?
 test_seed <- 234                  # for reproducibility
 n_test_splits <- 1                # number of random splits for testing
 n_test_series <- 20               # number of random series for testing
@@ -67,25 +67,6 @@ models <- c(
   # "PROPHET",
   "ESN"
   )
-
-# Echo State Networks ---------------------------------------------------------
-
-lags <- list(c(1))
-fourier <- NULL
-xreg <- NULL
-dy <- NULL
-dx <- 0
-inf_crit <- "bic"
-n_seed <- 42
-alpha <- 1
-rho <- 1
-n_states <- NULL
-n_models <- NULL
-density <- 0.5
-lambda <- c(1e-4, 2)
-scale_win <- 0.5
-scale_wres <- 0.5
-scale_inputs <- c(-0.5, 0.5)
 
 # Save user_settings as list --------------------------------------------------
 

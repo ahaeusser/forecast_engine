@@ -1,8 +1,8 @@
 
 ### Main script for calculations ##############################################
 
-# source("config_m4_mth.R")
-source("config_m4_qtr.R")
+source("config_m4_mth.R")
+# source("config_m4_qtr.R")
 
 source("script/100_pre_processing.R")
 source("script/200_prepare_input.R")
