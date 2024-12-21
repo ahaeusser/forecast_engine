@@ -24,7 +24,7 @@ if ("ESN" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("ESN" = ESN(!!sym(value_id))) %>%
+          model("ESN" = ESN(!!sym(value_id), inf_crit = "bic", rho = 0.95, lambda = c(1e-8, 8),)) %>%
           forecast(h = n_ahead)
         
         # Convert fable to future_frame

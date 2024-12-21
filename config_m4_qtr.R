@@ -43,8 +43,8 @@ benchmark <- "NAIVE"              # Benchmark method for rMAE
 
 # Modeling --------------------------------------------------------------------
 
-periods <- c(4)                  # seasonal periods
-outlier <- TRUE                  # outlier adjustment
+periods <- c(4)                   # seasonal periods
+outlier <- TRUE                   # outlier adjustment
 shift <- 200                      # constant shift to avoid negative values (DSHW)
 
 models <- c(
@@ -53,11 +53,11 @@ models <- c(
   "SNAIVE",
   # "MEAN",
   # "MEDIAN",
-  "TSLM",
-  "ARIMA",
-  "ETS",
-  "THETA", 
-  "TBATS",
+  # "TSLM",
+  # "ARIMA",
+  # "ETS",
+  # "THETA", 
+  # "TBATS",
   # "STL-NAIVE",
   # "STL-ARIMA",
   # "STL-ETS",
@@ -66,26 +66,7 @@ models <- c(
   # "NNETAR",
   # "PROPHET",
   "ESN"
-)
-
-# Echo State Networks ---------------------------------------------------------
-
-lags <- list(c(1))
-fourier <- NULL
-xreg <- NULL
-dy <- NULL
-dx <- 0
-inf_crit <- "bic"
-n_seed <- 42
-alpha <- 1
-rho <- 1
-n_states <- NULL
-n_models <- NULL
-density <- 0.5
-lambda <- c(1e-4, 2)
-scale_win <- 0.5
-scale_wres <- 0.5
-scale_inputs <- c(-0.5, 0.5)
+  )
 
 # Save user_settings as list --------------------------------------------------
 

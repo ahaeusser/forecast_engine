@@ -21,7 +21,7 @@ set_warn <- -1                    # warnings are suppressed
 run_name <- "M4_Monthly_Sample"   # set a name for the run
 Sys.setlocale("LC_TIME", "C")     # change default location and time
 
-test_run <- TRUE                 # test run or full run?
+test_run <- FALSE                 # test run or full run?
 test_seed <- 234                  # for reproducibility
 n_test_splits <- 1                # number of random splits for testing
 n_test_series <- 20               # number of random series for testing
@@ -53,11 +53,11 @@ models <- c(
   "SNAIVE",
   # "MEAN",
   # "MEDIAN",
-  "TSLM",
-  "ARIMA",
-  "ETS",
-  "THETA", 
-  "TBATS",
+  # "TSLM",
+  # "ARIMA",
+  # "ETS",
+  # "THETA", 
+  # "TBATS",
   # "STL-NAIVE",
   # "STL-ARIMA",
   # "STL-ETS",
