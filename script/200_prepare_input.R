@@ -14,9 +14,6 @@ main_frame <- input_frame
 main_summary <- main_frame %>%
   summarise_data(context = context)
 
-# .............................................................................
-
-
 # Interpolate missing values --------------------------------------------------
 
 main_frame <- main_frame %>%
@@ -58,23 +55,11 @@ split_frame <- make_split(
 # Reduce number of series and splits in split_frame for fast testing
 if (test_run == TRUE) {
   
-  set.seed(test_seed)
-  
-  random_series <- sample(
-    x = unique(split_frame[[series_id]]),
-    size = n_test_series,
-    replace = FALSE
-  )
-  
-  random_splits <- sample(
-    x = unique(split_frame[["split"]]),
-    size = n_test_splits,
-    replace = FALSE
-  )
+  random_series <- c("M11505", "M13093", "M14966", "M16895", "M17447")
   
   split_frame <- split_frame %>%
-    filter(!!sym(series_id) %in% random_series) %>%
-    filter(split %in% random_splits)
+    filter(!!sym(series_id) %in% random_series)
+  
 }
 
 # Initialize future_frame (empty object to store forecasts) --------------------

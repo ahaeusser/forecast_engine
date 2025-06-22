@@ -8,12 +8,11 @@ if ("ESN" %in% models) {
   
   # Train and forecast models -------------------------------------------------
   
-  with_progress({
-    p <- progressor(steps = nrow(split_frame))
-    future_esn <- future_map_dfr(
+  future_esn <- with_progress({
+    future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
-        p()
+        
         # Slice training data according to split
         train_frame <- slice_train(
           main_frame = main_frame,
@@ -24,7 +23,7 @@ if ("ESN" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("ESN" = ESN(!!sym(value_id), inf_crit = "bic", rho = 0.95, lambda = c(1e-8, 8),)) %>%
+          model("ESN" = ESN(!!sym(value_id))) %>%
           forecast(h = n_ahead)
         
         # Convert fable to future_frame
@@ -32,7 +31,10 @@ if ("ESN" %in% models) {
           fable = fable_frame,
           context = context
         )
-      })
+        
+      },
+      .progress = TRUE
+    )
   })
   
   # Store forecasts in future_frame -------------------------------------------
