@@ -22,9 +22,6 @@ run_name <- "M4_Monthly_Sample"   # set a name for the run
 Sys.setlocale("LC_TIME", "C")     # change default location and time
 
 test_run <- FALSE                 # test run or full run?
-test_seed <- 234                  # for reproducibility
-n_test_splits <- 1                # number of random splits for testing
-n_test_series <- 20               # number of random series for testing
 
 # Setup for time series cross validation --------------------------------------
 
@@ -38,8 +35,8 @@ exceed <- FALSE                   # out-of-sample forecasts?
 
 # Evaluation of forecast accuracy ---------------------------------------------
 
-set_metric <- "sMAPE"              # Accuracy metric for overall summary
-benchmark <- "NAIVE"              # Benchmark method for rMAE
+set_metric <- "sMAPE"             # Accuracy metric for overall summary
+benchmark <- NULL                 # Benchmark method for rMAE
 
 # Modeling --------------------------------------------------------------------
 
@@ -48,9 +45,9 @@ outlier <- TRUE                   # outlier adjustment
 shift <- 200                      # constant shift to avoid negative values (DSHW)
 
 models <- c(
-  "NAIVE",
-  "DRIFT",
-  "SNAIVE",
+  # "NAIVE",
+  # "DRIFT",
+  # "SNAIVE",
   # "MEAN",
   # "MEDIAN",
   # "TSLM",

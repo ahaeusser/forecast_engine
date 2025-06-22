@@ -22,15 +22,12 @@ run_name <- "M4_Quarterly_Sample" # set a name for the run
 Sys.setlocale("LC_TIME", "C")     # change default location and time
 
 test_run <- FALSE                 # test run or full run?
-test_seed <- 234                  # for reproducibility
-n_test_splits <- 1                # number of random splits for testing
-n_test_series <- 5                # number of random series for testing
 
 # Setup for time series cross validation --------------------------------------
 
 type <- "last"                    # type of initial training window
-value <- 7                       # size for initial training window
-n_ahead <- 8                     # size for testing window (forecast horizon)
+value <- 7                        # size for initial training window
+n_ahead <- 8                      # size for testing window (forecast horizon)
 n_skip <- 0                       # skip no observations
 n_lag <- 0                        # no lag
 mode <- "slide"                   # fixed window approach
@@ -38,8 +35,8 @@ exceed <- FALSE                   # out-of-sample forecasts?
 
 # Evaluation of forecast accuracy ---------------------------------------------
 
-set_metric <- "sMAPE"              # Accuracy metric for overall summary
-benchmark <- "NAIVE"              # Benchmark method for rMAE
+set_metric <- "sMAPE"             # Accuracy metric for overall summary
+benchmark <- NULL                 # Benchmark method for rMAE
 
 # Modeling --------------------------------------------------------------------
 
