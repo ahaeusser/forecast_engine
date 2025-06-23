@@ -10,6 +10,7 @@ library(future)
 library(progressr)
 library(furrr)
 library(tictoc)
+library(tscv)
 
 # Suppress warnings
 set_warn <- -1
@@ -21,6 +22,8 @@ plan(multisession)
 # Frequency of dataset
 # set_freq <- "monthly"
 set_freq <- "quarterly"
+
+outlier <- TRUE
 
 # Directory and file names, forecast horizon and period
 if (set_freq == "monthly") {
@@ -78,11 +81,22 @@ pars <- read_delim(
 main_frame <- readRDS(file = file_main)
 series_name <- unique(main_frame[["series"]])
 # series_name <- series_name[1:10]
-# series_name <- c("M11505", "M13093", "M14966", "M16895", "M17447")
 
 # Prepare data as list
 main_frame <- main_frame %>%
   filter(series %in% series_name)
+
+# Adjust outliers
+
+if (outlier == TRUE) {
+  main_frame <- main_frame %>%
+    group_by(series) %>%
+    mutate(
+      value = smooth_outlier(
+        x = value,
+        periods = periods)) %>%
+    ungroup()
+}
 
 pars <- pars %>%
   mutate(model = paste0("ESN-", model))
