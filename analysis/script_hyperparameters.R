@@ -20,8 +20,8 @@ options(warn = set_warn)
 plan(multisession)
 
 # Frequency of dataset
-# set_freq <- "monthly"
-set_freq <- "quarterly"
+set_freq <- "monthly"
+# set_freq <- "quarterly"
 
 outlier <- TRUE
 
@@ -215,6 +215,14 @@ pars_summary <- pars_summary %>%
 # Saving workspace to the path
 save.image(paste0("analysis/pars_",set_freq, ".RData"))
 
+
+# File documentation ==========================================================
+
+# 20250621_pars_monthly: Monthly dataset WITHOUT outlier adjustment 
+# 20250621_pars_quarterly: Quarterly dataset WITHOUT outlier adjustment
+
+# 20250624_pars_monthly: Monthly dataset WITH outlier adjustment 
+# 20250623_pars_quarterly: Quarterly dataset WITH outlier adjustment 
 
 
 # # Case (1) WITHOUT library(future) ============================================
