@@ -193,25 +193,6 @@ pars_frame <- with_progress({
 })
 toc()
 
-# Post-process output ---------------------------------------------------------
-
-# Average sMAPE and MASE and combine with hyperparameters
-pars_summary <- pars_frame %>%
-  group_by(model) %>%
-  summarise(
-    avg_smape = mean(smape, na.rm = TRUE),
-    avg_mase = mean(mase, na.rm = TRUE)) %>%
-  ungroup()
-
-pars_summary <- left_join(
-  x = pars,
-  y = pars_summary,
-  by = "model"
-  )
-
-pars_summary <- pars_summary %>%
-  arrange(avg_mase)
-
 # Saving workspace to the path
 save.image(paste0("analysis/pars_",set_freq, ".RData"))
 
@@ -223,6 +204,141 @@ save.image(paste0("analysis/pars_",set_freq, ".RData"))
 
 # 20250624_pars_monthly: Monthly dataset WITH outlier adjustment 
 # 20250623_pars_quarterly: Quarterly dataset WITH outlier adjustment 
+
+# =============================================================================
+
+
+# Post-process output ---------------------------------------------------------
+
+library(gt)
+library(tidyverse)
+
+# Tables main text ------------------------------------------------------------
+
+# Average sMAPE and MASE and combine with hyperparameters
+pars_summary <- pars_frame %>%
+  group_by(model) %>%
+  summarise(
+    mase_mean = mean(mase, na.rm = TRUE),
+    mase_median = median(mase, na.rm = TRUE),
+    smape_mean = mean(smape, na.rm = TRUE),
+    smape_median = median(smape, na.rm = TRUE)
+    ) %>%
+  ungroup()
+
+pars_summary <- left_join(
+  x = pars,
+  y = pars_summary,
+  by = "model"
+)
+
+pars_summary <- pars_summary %>%
+  arrange(mase_mean) %>%
+  mutate(
+    inf_crit = recode(
+      inf_crit,
+      "aic" = "AIC",
+      "bic" = "BIC",
+      "aicc" = "AICc",
+      "hqc" = "HQC"
+    )
+  )
+
+# Create table as LaTeX code
+pars_summary %>%
+  slice_head(n = 25) %>%
+  mutate(rank = row_number()) %>%
+  mutate(penalty = paste0("$[", lambda_lower, ", ", lambda_upper, "]$")) %>%
+  select(rank, model, inf_crit, alpha, rho, penalty, n_states, mase_mean, mase_median, smape_mean, smape_median) %>%
+  mutate(mase_mean = round(x = mase_mean, digits = 3)) %>%
+  mutate(mase_median = round(x = mase_median, digits = 3)) %>%
+  mutate(smape_mean = round(x = smape_mean, digits = 3)) %>%
+  mutate(smape_median = round(x = smape_median, digits = 3)) %>%
+  gt() %>%
+  as_latex() %>%
+  as.character() %>%
+  cat()
+
+
+# Tables appendix -------------------------------------------------------------
+
+metric <- "mase"
+criterion <- "bic"
+
+# Descriptive statistics
+pars_summary <- pars_frame %>%
+  select(model, series, alpha, rho, inf_crit, lambda_lower, lambda_upper, n_states, {{ metric }}) %>%
+  rename(value := !!sym(metric)) %>%
+  group_by(model) %>%
+  summarise(
+    "min"    = round(min(value, na.rm = TRUE), 3),
+    "q25"    = round(quantile(x = value, probs = 0.25), 3),
+    "mean"   = round(mean(value, na.rm = TRUE), 3),
+    "median" = round(median(value, na.rm = TRUE), 3),
+    "q75"    = round(quantile(x = value, probs = 0.75), 3),
+    "max"    = round(max(value, na.rm = TRUE), 3),
+    "std"    = round(sd(value, na.rm = TRUE), 3)
+  ) %>%
+  ungroup()
+
+pars_summary <- left_join(
+  x = pars,
+  y = pars_summary,
+  by = "model"
+)
+
+pars_summary <- pars_summary %>%
+  filter(inf_crit == criterion) %>%
+  arrange(model) %>%
+  mutate(
+    inf_crit = recode(
+      inf_crit,
+      "aic" = "AIC",
+      "bic" = "BIC",
+      "aicc" = "AICc",
+      "hqc" = "HQC"
+    )
+  )
+
+# Create table as LaTeX code
+pars_summary %>%
+  # mutate(rank = row_number()) %>%
+  mutate(penalty = paste0("$[", lambda_lower, ", ", lambda_upper, "]$")) %>%
+  select(model, inf_crit, alpha, rho, penalty, n_states, min, q25, mean, median, q75, max, std) %>%
+  mutate(min = round(x = min, digits = 3)) %>%
+  mutate(q25 = round(x = q25, digits = 3)) %>%
+  mutate(mean = round(x = mean, digits = 3)) %>%
+  mutate(median = round(x = median, digits = 3)) %>%
+  mutate(q75 = round(x = q75, digits = 3)) %>%
+  mutate(max = round(x = max, digits = 3)) %>%
+  mutate(std = round(x = std, digits = 3)) %>%
+  gt() %>%
+  as_latex() %>%
+  as.character() %>%
+  cat()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 # # Case (1) WITHOUT library(future) ============================================
@@ -321,7 +437,4 @@ save.image(paste0("analysis/pars_",set_freq, ".RData"))
 # 
 # fcst
 # fcst2$.mean
-
-
-
 
