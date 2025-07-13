@@ -219,10 +219,10 @@ library(tidyverse)
 pars_summary <- pars_frame %>%
   group_by(model) %>%
   summarise(
-    mase_mean = mean(mase, na.rm = TRUE),
-    mase_median = median(mase, na.rm = TRUE),
-    smape_mean = mean(smape, na.rm = TRUE),
-    smape_median = median(smape, na.rm = TRUE)
+    mase_mean    = round(mean(mase, na.rm = TRUE), 3),
+    mase_median  = round(median(mase, na.rm = TRUE), 3),
+    smape_mean   = round(mean(smape, na.rm = TRUE), 3),
+    smape_median = round(median(smape, na.rm = TRUE), 3)
     ) %>%
   ungroup()
 
@@ -250,68 +250,52 @@ pars_summary %>%
   mutate(rank = row_number()) %>%
   mutate(penalty = paste0("$[", lambda_lower, ", ", lambda_upper, "]$")) %>%
   select(rank, model, inf_crit, alpha, rho, penalty, n_states, mase_mean, mase_median, smape_mean, smape_median) %>%
-  mutate(mase_mean = round(x = mase_mean, digits = 3)) %>%
-  mutate(mase_median = round(x = mase_median, digits = 3)) %>%
-  mutate(smape_mean = round(x = smape_mean, digits = 3)) %>%
-  mutate(smape_median = round(x = smape_median, digits = 3)) %>%
   gt() %>%
   as_latex() %>%
   as.character() %>%
   cat()
+
+
 
 
 # Tables appendix -------------------------------------------------------------
 
-metric <- "mase"
-criterion <- "bic"
-
 # Descriptive statistics
 pars_summary <- pars_frame %>%
-  select(model, series, alpha, rho, inf_crit, lambda_lower, lambda_upper, n_states, {{ metric }}) %>%
-  rename(value := !!sym(metric)) %>%
   group_by(model) %>%
   summarise(
-    "min"    = round(min(value, na.rm = TRUE), 3),
-    "q25"    = round(quantile(x = value, probs = 0.25), 3),
-    "mean"   = round(mean(value, na.rm = TRUE), 3),
-    "median" = round(median(value, na.rm = TRUE), 3),
-    "q75"    = round(quantile(x = value, probs = 0.75), 3),
-    "max"    = round(max(value, na.rm = TRUE), 3),
-    "std"    = round(sd(value, na.rm = TRUE), 3)
+    "mase_min"     = round(min(mase, na.rm = TRUE), 3),
+    "mase_q1"      = round(quantile(x = mase, probs = 0.25), 3),
+    "mase_mean"    = round(mean(mase, na.rm = TRUE), 3),
+    "mase_median"  = round(median(mase, na.rm = TRUE), 3),
+    "mase_q3"      = round(quantile(x = mase, probs = 0.75), 3),
+    "mase_max"     = round(max(mase, na.rm = TRUE), 3),
+    "mase_std"     = round(sd(mase, na.rm = TRUE), 3),
+    "smape_min"    = round(min(smape, na.rm = TRUE), 3),
+    "smape_q1"     = round(quantile(x = smape, probs = 0.25), 3),
+    "smape_mean"   = round(mean(smape, na.rm = TRUE), 3),
+    "smape_median" = round(median(smape, na.rm = TRUE), 3),
+    "smape_q3"     = round(quantile(x = smape, probs = 0.75), 3),
+    "smape_max"    = round(max(smape, na.rm = TRUE), 3),
+    "smape_std"    = round(sd(smape, na.rm = TRUE), 3)
   ) %>%
   ungroup()
 
-pars_summary <- left_join(
-  x = pars,
-  y = pars_summary,
-  by = "model"
-)
-
-pars_summary <- pars_summary %>%
-  filter(inf_crit == criterion) %>%
-  arrange(model) %>%
-  mutate(
-    inf_crit = recode(
-      inf_crit,
-      "aic" = "AIC",
-      "bic" = "BIC",
-      "aicc" = "AICc",
-      "hqc" = "HQC"
-    )
-  )
-
 # Create table as LaTeX code
 pars_summary %>%
-  # mutate(rank = row_number()) %>%
+  gt() %>%
+  as_latex() %>%
+  as.character() %>%
+  cat()
+
+
+
+# To Do: Rework
+# Create model reference table as LaTeX code
+pars %>%
+  mutate(rank = row_number()) %>%
   mutate(penalty = paste0("$[", lambda_lower, ", ", lambda_upper, "]$")) %>%
-  select(model, inf_crit, alpha, rho, penalty, n_states, min, q25, mean, median, q75, max, std) %>%
-  mutate(min = round(x = min, digits = 3)) %>%
-  mutate(q25 = round(x = q25, digits = 3)) %>%
-  mutate(mean = round(x = mean, digits = 3)) %>%
-  mutate(median = round(x = median, digits = 3)) %>%
-  mutate(q75 = round(x = q75, digits = 3)) %>%
-  mutate(max = round(x = max, digits = 3)) %>%
-  mutate(std = round(x = std, digits = 3)) %>%
+  select(model, inf_crit, alpha, rho, penalty, n_states) %>%
   gt() %>%
   as_latex() %>%
   as.character() %>%
@@ -329,7 +313,62 @@ pars_summary %>%
 
 
 
-
+# # Tables appendix -------------------------------------------------------------
+# 
+# metric <- "mase"
+# criterion <- "bic"
+# 
+# # Descriptive statistics
+# pars_summary <- pars_frame %>%
+#   select(model, series, alpha, rho, inf_crit, lambda_lower, lambda_upper, n_states, {{ metric }}) %>%
+#   rename(value := !!sym(metric)) %>%
+#   group_by(model) %>%
+#   summarise(
+#     "min"    = round(min(value, na.rm = TRUE), 3),
+#     "q25"    = round(quantile(x = value, probs = 0.25), 3),
+#     "mean"   = round(mean(value, na.rm = TRUE), 3),
+#     "median" = round(median(value, na.rm = TRUE), 3),
+#     "q75"    = round(quantile(x = value, probs = 0.75), 3),
+#     "max"    = round(max(value, na.rm = TRUE), 3),
+#     "std"    = round(sd(value, na.rm = TRUE), 3)
+#   ) %>%
+#   ungroup()
+# 
+# pars_summary <- left_join(
+#   x = pars,
+#   y = pars_summary,
+#   by = "model"
+# )
+# 
+# pars_summary <- pars_summary %>%
+#   filter(inf_crit == criterion) %>%
+#   arrange(model) %>%
+#   mutate(
+#     inf_crit = recode(
+#       inf_crit,
+#       "aic" = "AIC",
+#       "bic" = "BIC",
+#       "aicc" = "AICc",
+#       "hqc" = "HQC"
+#     )
+#   )
+# 
+# # Create table as LaTeX code
+# pars_summary %>%
+#   # mutate(rank = row_number()) %>%
+#   mutate(penalty = paste0("$[", lambda_lower, ", ", lambda_upper, "]$")) %>%
+#   select(model, inf_crit, alpha, rho, penalty, n_states, min, q25, mean, median, q75, max, std) %>%
+#   mutate(min = round(x = min, digits = 3)) %>%
+#   mutate(q25 = round(x = q25, digits = 3)) %>%
+#   mutate(mean = round(x = mean, digits = 3)) %>%
+#   mutate(median = round(x = median, digits = 3)) %>%
+#   mutate(q75 = round(x = q75, digits = 3)) %>%
+#   mutate(max = round(x = max, digits = 3)) %>%
+#   mutate(std = round(x = std, digits = 3)) %>%
+#   gt() %>%
+#   as_latex() %>%
+#   as.character() %>%
+#   cat()
 
 
 
