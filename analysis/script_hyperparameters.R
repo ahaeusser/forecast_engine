@@ -19,6 +19,9 @@ options(warn = set_warn)
 # Parallel computing
 plan(multisession)
 
+# Number of random hyperparameters
+n_pars <- 200
+
 # Frequency of dataset
 set_freq <- "monthly"
 # set_freq <- "quarterly"
@@ -62,25 +65,56 @@ mase_vec <- function(test,
   denominator <- mean(abs(train - naive), na.rm = na_rm)
   # MASE
   numerator / denominator
+}
+
+paste_names <- function(x, n) {
+  x <- paste0(
+    x,"-",
+    formatC(
+      x = 1:n,
+      width = nchar(n),
+      flag = "0"))
   
+  return(x)
 }
 
 
 # Pre-process input -----------------------------------------------------------
 
 # Hyperparameters
-pars <- read_delim(
-  file = "analysis/hyperparameters.csv",
-  delim = ";",
-  escape_double = FALSE,
-  locale = locale(decimal_mark = ",", grouping_mark = "."),
-  trim_ws = TRUE
+# pars <- read_delim(
+#   file = "analysis/hyperparameters.csv",
+#   delim = ";",
+#   escape_double = FALSE,
+#   locale = locale(decimal_mark = ",", grouping_mark = "."),
+#   trim_ws = TRUE
+# )
+
+
+set.seed(123)
+model <- paste_names(x = "ESN", n_pars)
+inf_crit <- sample(x = c("bic", "aic", "aicc", "hqc"), size = n_pars, replace = TRUE)
+alpha <- sample(x = seq(0.1, 1.0, 0.05), size = n_pars, replace = TRUE)
+rho <- sample(x = seq(0.5, 1.5, 0.1), size = n_pars, replace = TRUE)
+tau <- sample(x = c(0.2, 0.4, 0.6, 0.8, 1.0), size = n_pars, replace = TRUE)
+
+pars <- tibble(
+  model = model,
+  inf_crit = inf_crit,
+  alpha = alpha,
+  rho = rho,
+  tau = tau
 )
 
 # Raw dataset
 main_frame <- readRDS(file = file_main)
 series_name <- unique(main_frame[["series"]])
-# series_name <- series_name[1:10]
+
+
+
+series_name <- series_name[1:10]
+
+
 
 # Prepare data as list
 main_frame <- main_frame %>%
@@ -98,8 +132,6 @@ if (outlier == TRUE) {
     ungroup()
 }
 
-pars <- pars %>%
-  mutate(model = paste0("ESN-", model))
 
 # Combinations of pars and series
 full_grid <- expand_grid(
@@ -111,8 +143,6 @@ full_grid <- expand_grid(
 full_grid <- full_grid %>%
   mutate(ID = row_number(), .before = model)
 
-#Number of parameters
-n_pars <- nrow(pars)
 # Number of iterations
 n_steps <- nrow(full_grid)
 
@@ -126,12 +156,10 @@ pars_frame <- with_progress({
       
       model_id <- full_grid[["model"]][.x]
       xseries <- full_grid[["series_name"]][.x]
+      inf_crit <- full_grid[["inf_crit"]][.x]
       alpha <- full_grid[["alpha"]][.x]
       rho <- full_grid[["rho"]][.x]
-      inf_crit <- full_grid[["inf_crit"]][.x]
-      lambda_lower <- full_grid[["lambda_lower"]][.x]
-      lambda_upper <- full_grid[["lambda_upper"]][.x]
-      n_states <- full_grid[["n_states"]][.x]
+      tau <- full_grid[["tau"]][.x]
       
       # Extract series
       x <- main_frame %>%
@@ -152,8 +180,7 @@ pars_frame <- with_progress({
         inf_crit = inf_crit,
         alpha = alpha,
         rho = rho,
-        lambda = c(lambda_lower, lambda_upper),
-        n_states = min(floor(n_states*n_train), 200)
+        n_states = min(floor(tau*n_train), 200)
       )
       
       # Forecast ESN model
@@ -178,12 +205,10 @@ pars_frame <- with_progress({
       tibble(
         model = model_id,
         series = xseries,
+        inf_crit = inf_crit,
         alpha = alpha,
         rho = rho,
-        inf_crit = inf_crit,
-        lambda_lower = lambda_lower,
-        lambda_upper = lambda_upper,
-        n_states = n_states,
+        tau = tau,
         smape = smape,
         mase = mase
       )
@@ -246,10 +271,9 @@ pars_summary <- pars_summary %>%
 
 # Create table as LaTeX code
 pars_summary %>%
-  slice_head(n = 25) %>%
+  slice_head(n = 30) %>%
   mutate(rank = row_number()) %>%
-  mutate(penalty = paste0("$[", lambda_lower, ", ", lambda_upper, "]$")) %>%
-  select(rank, model, inf_crit, alpha, rho, penalty, n_states, mase_mean, mase_median, smape_mean, smape_median) %>%
+  select(rank, model, inf_crit, alpha, rho, tau, mase_mean, mase_median, smape_mean, smape_median) %>%
   gt() %>%
   as_latex() %>%
   as.character() %>%
@@ -294,8 +318,7 @@ pars_summary %>%
 # Create model reference table as LaTeX code
 pars %>%
   mutate(rank = row_number()) %>%
-  mutate(penalty = paste0("$[", lambda_lower, ", ", lambda_upper, "]$")) %>%
-  select(model, inf_crit, alpha, rho, penalty, n_states) %>%
+  select(model, inf_crit, alpha, rho, tau) %>%
   gt() %>%
   as_latex() %>%
   as.character() %>%
