@@ -109,12 +109,7 @@ pars <- tibble(
 # Raw dataset
 main_frame <- readRDS(file = file_main)
 series_name <- unique(main_frame[["series"]])
-
-
-
-series_name <- series_name[1:10]
-
-
+# series_name <- series_name[1:10]
 
 # Prepare data as list
 main_frame <- main_frame %>%
