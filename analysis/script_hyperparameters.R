@@ -19,14 +19,15 @@ options(warn = set_warn)
 # Parallel computing
 plan(multisession)
 
-# Number of random hyperparameters
-n_pars <- 200
-
 # Frequency of dataset
 set_freq <- "monthly"
 # set_freq <- "quarterly"
-
+# Information criterion
+set_inf_crit <- "aic"
+# Outlier adjustment
 outlier <- TRUE
+# Test run
+test_run <- FALSE
 
 # Directory and file names, forecast horizon and period
 if (set_freq == "monthly") {
@@ -82,41 +83,34 @@ paste_names <- function(x, n) {
 # Pre-process input -----------------------------------------------------------
 
 # Hyperparameters
-# pars <- read_delim(
-#   file = "analysis/hyperparameters.csv",
-#   delim = ";",
-#   escape_double = FALSE,
-#   locale = locale(decimal_mark = ",", grouping_mark = "."),
-#   trim_ws = TRUE
-# )
 
-
-set.seed(123)
-model <- paste_names(x = "ESN", n_pars)
-inf_crit <- sample(x = c("bic", "aic", "aicc", "hqc"), size = n_pars, replace = TRUE)
-alpha <- sample(x = seq(0.1, 1.0, 0.05), size = n_pars, replace = TRUE)
-rho <- sample(x = seq(0.5, 1.5, 0.1), size = n_pars, replace = TRUE)
-tau <- sample(x = c(0.2, 0.4, 0.6, 0.8, 1.0), size = n_pars, replace = TRUE)
-
-pars <- tibble(
-  model = model,
-  inf_crit = inf_crit,
-  alpha = alpha,
-  rho = rho,
-  tau = tau
+# Full grid with all combinations
+pars <- expand_grid(
+  inf_crit = c("aic", "aicc", "bic", "hqc"),
+  alpha = seq(0.1, 1.0, 0.1),
+  rho = seq(0.4, 1.2, 0.1),
+  tau = seq(0.2, 0.4, 0.6)
 )
+
+# Number of combinations
+n_pars <- nrow(pars)
+# Add unique model identifier and filter
+pars <- pars %>%
+  mutate(model = paste_names(x = "ESN", n_pars), .before = inf_crit) %>%
+  filter(inf_crit == set_inf_crit)
 
 # Raw dataset
 main_frame <- readRDS(file = file_main)
 series_name <- unique(main_frame[["series"]])
-# series_name <- series_name[1:10]
 
-# Prepare data as list
-main_frame <- main_frame %>%
-  filter(series %in% series_name)
+# Test run
+if (test_run == TRUE) {
+  series_name <- series_name[1:10]
+  main_frame <- main_frame %>%
+    filter(series %in% series_name)
+}
 
 # Adjust outliers
-
 if (outlier == TRUE) {
   main_frame <- main_frame %>%
     group_by(series) %>%
@@ -126,7 +120,6 @@ if (outlier == TRUE) {
         periods = periods)) %>%
     ungroup()
 }
-
 
 # Combinations of pars and series
 full_grid <- expand_grid(
@@ -213,18 +206,22 @@ pars_frame <- with_progress({
 })
 toc()
 
-# Saving workspace to the path
-save.image(paste0("analysis/pars_",set_freq, ".RData"))
+
+# Saving object to the path
+file_name <- paste0(
+  "analysis/", 
+  format(Sys.time(), "%Y%m%d"), "_pars_", set_freq, "_", set_inf_crit,
+  ".rds")
+
+saveRDS(
+  object = pars_frame,
+  file = file_name
+  )
+
+# save.image(paste0("analysis/pars_",set_freq, ".RData"))
 
 
 # File documentation ==========================================================
-
-# 20250621_pars_monthly: Monthly dataset WITHOUT outlier adjustment 
-# 20250621_pars_quarterly: Quarterly dataset WITHOUT outlier adjustment
-
-# 20250624_pars_monthly: Monthly dataset WITH outlier adjustment 
-# 20250623_pars_quarterly: Quarterly dataset WITH outlier adjustment 
-
 # =============================================================================
 
 
