@@ -23,7 +23,7 @@ plan(multisession)
 set_freq <- "monthly"
 # set_freq <- "quarterly"
 # Information criterion
-set_inf_crit <- "aic"
+set_inf_crit <- "aicc"
 # Outlier adjustment
 outlier <- TRUE
 # Test run
