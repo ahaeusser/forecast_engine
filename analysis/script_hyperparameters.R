@@ -329,6 +329,31 @@ pars_summary %>%
   cat()
 
 
+# Figures ---------------------------------------------------------------------
+
+
+
+ggplot(pars_frame, aes(x = mase)) +
+  geom_histogram(binwidth = 0.2, fill = "tomato", color = "white") +
+  labs(title = "Distribution of MASE",
+       x = "MASE",
+       y = "Count") +
+  theme_minimal()
+
+ggplot(pars_frame, aes(x = factor(alpha), y = mase)) +
+  geom_boxplot(outlier.shape = NA, fill = "lightblue") +
+  # geom_jitter(width = 0.2, alpha = 0.5, color = "darkblue") +
+  labs(title = "MASE distribution by alpha",
+       x = "alpha", y = "MASE") +
+  theme_minimal()
+
+ggplot(pars_frame, aes(x = factor(rho), y = mase)) +
+  geom_violin(fill = "lightgreen") +
+  labs(title = "Distribution of MASE by rho",
+       x = "rho", y = "MASE") +
+  theme_minimal()
+
+
 
 
 # Tables appendix -------------------------------------------------------------
