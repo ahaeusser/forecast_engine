@@ -1,5 +1,7 @@
 
-# Test hyperparameters ========================================================
+# Hyperparameter Sweep ########################################################
+
+# Pre-process input ===========================================================
 
 # Configuration ---------------------------------------------------------------
 
@@ -79,10 +81,7 @@ paste_names <- function(x, n) {
   return(x)
 }
 
-
-# Pre-process input -----------------------------------------------------------
-
-# Hyperparameters
+# Hyperparameters -------------------------------------------------------------
 
 # Full grid with all combinations
 pars <- expand_grid(
@@ -221,14 +220,72 @@ saveRDS(
 # save.image(paste0("analysis/pars_",set_freq, ".RData"))
 
 
-# File documentation ==========================================================
-# =============================================================================
 
+# Post-process output =========================================================
 
-# Post-process output ---------------------------------------------------------
+# Configuration ---------------------------------------------------------------
 
+# Load relevant packages
 library(gt)
 library(tidyverse)
+
+# Frequency of dataset
+set_freq <- "monthly"
+set_freq <- "quarterly"
+
+# Functions -------------------------------------------------------------------
+
+paste_names <- function(x, n) {
+  x <- paste0(
+    x,"-",
+    formatC(
+      x = 1:n,
+      width = nchar(n),
+      flag = "0"))
+  
+  return(x)
+}
+
+
+# Full grid with all combinations
+pars <- expand_grid(
+  inf_crit = c("aic", "aicc", "bic", "hqc"),
+  alpha = seq(0.1, 1.0, 0.1),
+  rho = seq(0.4, 1.2, 0.1),
+  tau = c(0.2, 0.4, 0.6)
+)
+
+# Number of combinations
+n_pars <- nrow(pars)
+# Add unique model identifier and filter
+pars <- pars %>%
+  mutate(model = paste_names(x = "ESN", n_pars), .before = inf_crit)
+
+# Directory and file names, forecast horizon and period
+if (set_freq == "monthly") {
+  files <- list(
+    "analysis/20250815_pars_monthly_aic.rds",
+    "analysis/20250818_pars_monthly_aicc.rds",
+    "analysis/20250822_pars_monthly_bic.rds",
+    "analysis/20250827_pars_monthly_hqc.rds"
+  )
+}
+
+if (set_freq == "quarterly") {
+  files <- list(
+    "analysis/20250827_pars_quarterly_aic.rds",
+    "analysis/20250827_pars_quarterly_aicc.rds",
+    "analysis/20250828_pars_quarterly_bic.rds",
+    "analysis/20250828_pars_quarterly_hqc.rds"
+  )
+}
+
+# Read rds-files from list
+pars_list <- lapply(files, readRDS)
+
+# Combine data frames row-wise
+pars_frame <- bind_rows(lapply(files, readRDS))
+
 
 # Tables main text ------------------------------------------------------------
 
