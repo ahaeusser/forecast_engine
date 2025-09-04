@@ -10,13 +10,13 @@ plan(multisession)
 
 # Frequency of dataset
 set_freq <- "monthly"
-set_freq <- "quarterly"
+# set_freq <- "quarterly"
 # Information criterion
-set_inf_crit <- "hqc"
+set_inf_crit <- "aic"
 # Outlier adjustment
 outlier <- TRUE
 # Test run
-test_run <- TRUE
+test_run <- FALSE
 
 # Directory and file names, forecast horizon and period
 if (set_freq == "monthly") {
