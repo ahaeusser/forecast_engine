@@ -263,5 +263,3 @@ p <- p + coord_flip()
 p <- p + labs(x = "Hyperparameter", y = "Mean MASE")
 p <- p + theme_tscv()
 p
-
-

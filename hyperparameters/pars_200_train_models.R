@@ -3,14 +3,14 @@
 
 # Pre-processing --------------------------------------------------------------
 
-source("hyperparameters/pars_100_config.R")
+source("hyperparameters/pars_100_config_file.R")
 
 # Parallel computing
 plan(multisession)
 
 # Frequency of dataset
 set_freq <- "monthly"
-# set_freq <- "quarterly"
+set_freq <- "quarterly"
 # Information criterion
 set_inf_crit <- "aic"
 # Outlier adjustment
@@ -20,13 +20,13 @@ test_run <- FALSE
 
 # Directory and file names, forecast horizon and period
 if (set_freq == "monthly") {
-  file_main <- "data/main_mth_sample.rds"
+  file_main <- "data/main_mth_hyperparameter.rds"
   n_ahead <- 18
   periods <- 12
 }
 
 if (set_freq == "quarterly") {
-  file_main <- "data/main_qtr_sample.rds"
+  file_main <- "data/main_qtr_hyperparameter.rds"
   n_ahead <- 8
   periods <- 4
 }
