@@ -60,7 +60,7 @@ paste_names <- function(x, n) {
 pars <- expand_grid(
   inf_crit = c("aic", "aicc", "bic", "hqc"),
   alpha = seq(0.1, 1.0, 0.1),
-  rho = seq(0.4, 1.2, 0.1),
+  rho = seq(0.2, 1.2, 0.1),
   tau = c(0.2, 0.4, 0.6)
 )
 
