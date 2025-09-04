@@ -228,6 +228,7 @@ saveRDS(
 # Load relevant packages
 library(gt)
 library(tidyverse)
+library(tscv)
 
 # Frequency of dataset
 set_freq <- "monthly"
@@ -290,7 +291,7 @@ pars_frame <- bind_rows(lapply(files, readRDS))
 # Tables main text ------------------------------------------------------------
 
 # Average sMAPE and MASE and combine with hyperparameters
-pars_summary <- pars_frame %>%
+pars_model <- pars_frame %>%
   group_by(model) %>%
   summarise(
     mase_mean    = round(mean(mase, na.rm = TRUE), 3),
@@ -300,13 +301,13 @@ pars_summary <- pars_frame %>%
     ) %>%
   ungroup()
 
-pars_summary <- left_join(
+pars_model <- left_join(
   x = pars,
-  y = pars_summary,
+  y = pars_model,
   by = "model"
 )
 
-pars_summary <- pars_summary %>%
+pars_model <- pars_model %>%
   arrange(mase_mean) %>%
   mutate(
     inf_crit = recode(
@@ -319,7 +320,7 @@ pars_summary <- pars_summary %>%
   )
 
 # Create table as LaTeX code
-pars_summary %>%
+pars_model %>%
   slice_head(n = 30) %>%
   mutate(rank = row_number()) %>%
   select(rank, model, inf_crit, alpha, rho, tau, mase_mean, mase_median, smape_mean, smape_median) %>%
@@ -329,38 +330,12 @@ pars_summary %>%
   cat()
 
 
-# Figures ---------------------------------------------------------------------
-
-
-
-ggplot(pars_frame, aes(x = mase)) +
-  geom_histogram(binwidth = 0.2, fill = "tomato", color = "white") +
-  labs(title = "Distribution of MASE",
-       x = "MASE",
-       y = "Count") +
-  theme_minimal()
-
-ggplot(pars_frame, aes(x = factor(alpha), y = mase)) +
-  geom_boxplot(outlier.shape = NA, fill = "lightblue") +
-  # geom_jitter(width = 0.2, alpha = 0.5, color = "darkblue") +
-  labs(title = "MASE distribution by alpha",
-       x = "alpha", y = "MASE") +
-  theme_minimal()
-
-ggplot(pars_frame, aes(x = factor(rho), y = mase)) +
-  geom_violin(fill = "lightgreen") +
-  labs(title = "Distribution of MASE by rho",
-       x = "rho", y = "MASE") +
-  theme_minimal()
-
-
-
 
 # Tables appendix -------------------------------------------------------------
 
-# Descriptive statistics
-pars_summary <- pars_frame %>%
-  group_by(model) %>%
+# Leakage rate alpha
+pars_alpha <- pars_frame %>%
+  group_by(alpha) %>%
   summarise(
     "mase_min"     = round(min(mase, na.rm = TRUE), 3),
     "mase_q1"      = round(quantile(x = mase, probs = 0.25), 3),
@@ -377,22 +352,102 @@ pars_summary <- pars_frame %>%
     "smape_max"    = round(max(smape, na.rm = TRUE), 3),
     "smape_std"    = round(sd(smape, na.rm = TRUE), 3)
   ) %>%
-  ungroup()
+  ungroup() %>%
+  rename(value = alpha) %>%
+  mutate(value = as_factor(value)) %>%
+  mutate(par = "alpha", .before = value)
+
+
+# Spectral radius rho
+pars_rho <- pars_frame %>%
+  group_by(rho) %>%
+  summarise(
+    "mase_min"     = round(min(mase, na.rm = TRUE), 3),
+    "mase_q1"      = round(quantile(x = mase, probs = 0.25), 3),
+    "mase_mean"    = round(mean(mase, na.rm = TRUE), 3),
+    "mase_median"  = round(median(mase, na.rm = TRUE), 3),
+    "mase_q3"      = round(quantile(x = mase, probs = 0.75), 3),
+    "mase_max"     = round(max(mase, na.rm = TRUE), 3),
+    "mase_std"     = round(sd(mase, na.rm = TRUE), 3),
+    "smape_min"    = round(min(smape, na.rm = TRUE), 3),
+    "smape_q1"     = round(quantile(x = smape, probs = 0.25), 3),
+    "smape_mean"   = round(mean(smape, na.rm = TRUE), 3),
+    "smape_median" = round(median(smape, na.rm = TRUE), 3),
+    "smape_q3"     = round(quantile(x = smape, probs = 0.75), 3),
+    "smape_max"    = round(max(smape, na.rm = TRUE), 3),
+    "smape_std"    = round(sd(smape, na.rm = TRUE), 3)
+  ) %>%
+  ungroup() %>%
+  rename(value = rho) %>%
+  mutate(value = as_factor(value)) %>%
+  mutate(par = "rho", .before = value)
+
+
+# Reservoir scaling tau
+pars_tau <- pars_frame %>%
+  group_by(tau) %>%
+  summarise(
+    "mase_min"     = round(min(mase, na.rm = TRUE), 3),
+    "mase_q1"      = round(quantile(x = mase, probs = 0.25), 3),
+    "mase_mean"    = round(mean(mase, na.rm = TRUE), 3),
+    "mase_median"  = round(median(mase, na.rm = TRUE), 3),
+    "mase_q3"      = round(quantile(x = mase, probs = 0.75), 3),
+    "mase_max"     = round(max(mase, na.rm = TRUE), 3),
+    "mase_std"     = round(sd(mase, na.rm = TRUE), 3),
+    "smape_min"    = round(min(smape, na.rm = TRUE), 3),
+    "smape_q1"     = round(quantile(x = smape, probs = 0.25), 3),
+    "smape_mean"   = round(mean(smape, na.rm = TRUE), 3),
+    "smape_median" = round(median(smape, na.rm = TRUE), 3),
+    "smape_q3"     = round(quantile(x = smape, probs = 0.75), 3),
+    "smape_max"    = round(max(smape, na.rm = TRUE), 3),
+    "smape_std"    = round(sd(smape, na.rm = TRUE), 3)
+  ) %>%
+  ungroup() %>%
+  rename(value = tau) %>%
+  mutate(value = as_factor(value)) %>%
+  mutate(par = "tau", .before = value)
+
+
+# Information criterion
+pars_inf_crit <- pars_frame %>%
+  group_by(inf_crit) %>%
+  summarise(
+    "mase_min"     = round(min(mase, na.rm = TRUE), 3),
+    "mase_q1"      = round(quantile(x = mase, probs = 0.25), 3),
+    "mase_mean"    = round(mean(mase, na.rm = TRUE), 3),
+    "mase_median"  = round(median(mase, na.rm = TRUE), 3),
+    "mase_q3"      = round(quantile(x = mase, probs = 0.75), 3),
+    "mase_max"     = round(max(mase, na.rm = TRUE), 3),
+    "mase_std"     = round(sd(mase, na.rm = TRUE), 3),
+    "smape_min"    = round(min(smape, na.rm = TRUE), 3),
+    "smape_q1"     = round(quantile(x = smape, probs = 0.25), 3),
+    "smape_mean"   = round(mean(smape, na.rm = TRUE), 3),
+    "smape_median" = round(median(smape, na.rm = TRUE), 3),
+    "smape_q3"     = round(quantile(x = smape, probs = 0.75), 3),
+    "smape_max"    = round(max(smape, na.rm = TRUE), 3),
+    "smape_std"    = round(sd(smape, na.rm = TRUE), 3)
+  ) %>%
+  ungroup() %>%
+  mutate(
+    inf_crit = recode(
+      inf_crit,
+      "aic" = "AIC",
+      "bic" = "BIC",
+      "aicc" = "AICc",
+      "hqc" = "HQC")) %>%
+  rename(value = inf_crit) %>%
+  mutate(value = as_factor(value)) %>%
+  mutate(par = "inf_crit", .before = value)
+
+
+pars_dist <- bind_rows(
+  pars_alpha,
+  pars_rho,
+  pars_tau,
+  pars_inf_crit)
 
 # Create table as LaTeX code
-pars_summary %>%
-  gt() %>%
-  as_latex() %>%
-  as.character() %>%
-  cat()
-
-
-
-# To Do: Rework
-# Create model reference table as LaTeX code
-pars %>%
-  mutate(rank = row_number()) %>%
-  select(model, inf_crit, alpha, rho, tau) %>%
+pars_dist %>%
   gt() %>%
   as_latex() %>%
   as.character() %>%
@@ -401,73 +456,58 @@ pars %>%
 
 
 
+# Figure ----------------------------------------------------------------------
+
+# Reorder facets manually
+pars_dist$par <- factor(
+  pars_dist$par,
+  levels = c(
+    "alpha", 
+    "rho", 
+    "tau", 
+    "inf_crit"
+    )
+  )
+
+pars_dist <- pars_dist %>%
+  mutate(
+    par = recode(
+      par,
+      "alpha" = "Leakage Rate",
+      "rho" = "Spectral Radius",
+      "tau" = "Reservoir Scaling",
+      "inf_crit" = "Information Criterion"))
+
+# find row(s) with minimum mase_mean per facet
+min_points <- pars_dist %>%
+  group_by(par) %>%
+  slice_min(mase_mean, n = 1, with_ties = FALSE)
 
 
+p <- ggplot(
+  data = pars_dist,
+  aes(
+    x = factor(value),
+    y = mase_mean,
+    group = 1)
+  )
 
+p <- p + geom_point(color = "grey35", size = 4)
+p <- p + geom_line(color = "grey35", size = 1)
 
+p <- p + geom_point(
+  data = min_points,
+  aes(
+    x = factor(value), 
+    y = mase_mean),
+  color = "#F8766D", 
+  size = 5)
 
-
-
-
-
-# # Tables appendix -------------------------------------------------------------
-# 
-# metric <- "mase"
-# criterion <- "bic"
-# 
-# # Descriptive statistics
-# pars_summary <- pars_frame %>%
-#   select(model, series, alpha, rho, inf_crit, lambda_lower, lambda_upper, n_states, {{ metric }}) %>%
-#   rename(value := !!sym(metric)) %>%
-#   group_by(model) %>%
-#   summarise(
-#     "min"    = round(min(value, na.rm = TRUE), 3),
-#     "q25"    = round(quantile(x = value, probs = 0.25), 3),
-#     "mean"   = round(mean(value, na.rm = TRUE), 3),
-#     "median" = round(median(value, na.rm = TRUE), 3),
-#     "q75"    = round(quantile(x = value, probs = 0.75), 3),
-#     "max"    = round(max(value, na.rm = TRUE), 3),
-#     "std"    = round(sd(value, na.rm = TRUE), 3)
-#   ) %>%
-#   ungroup()
-# 
-# pars_summary <- left_join(
-#   x = pars,
-#   y = pars_summary,
-#   by = "model"
-# )
-# 
-# pars_summary <- pars_summary %>%
-#   filter(inf_crit == criterion) %>%
-#   arrange(model) %>%
-#   mutate(
-#     inf_crit = recode(
-#       inf_crit,
-#       "aic" = "AIC",
-#       "bic" = "BIC",
-#       "aicc" = "AICc",
-#       "hqc" = "HQC"
-#     )
-#   )
-# 
-# # Create table as LaTeX code
-# pars_summary %>%
-#   # mutate(rank = row_number()) %>%
-#   mutate(penalty = paste0("$[", lambda_lower, ", ", lambda_upper, "]$")) %>%
-#   select(model, inf_crit, alpha, rho, penalty, n_states, min, q25, mean, median, q75, max, std) %>%
-#   mutate(min = round(x = min, digits = 3)) %>%
-#   mutate(q25 = round(x = q25, digits = 3)) %>%
-#   mutate(mean = round(x = mean, digits = 3)) %>%
-#   mutate(median = round(x = median, digits = 3)) %>%
-#   mutate(q75 = round(x = q75, digits = 3)) %>%
-#   mutate(max = round(x = max, digits = 3)) %>%
-#   mutate(std = round(x = std, digits = 3)) %>%
-#   gt() %>%
-#   as_latex() %>%
-#   as.character() %>%
-#   cat()
-
-
+p <- p + facet_wrap(~ par, scales = "free_y", ncol = 1)
+p <- p + coord_flip()
+p <- p + labs(x = "Hyperparameter", y = "Mean MASE")
+p <- p + theme_tscv()
+p
 
 
 
