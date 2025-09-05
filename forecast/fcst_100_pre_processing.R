@@ -32,7 +32,7 @@ suppressPackageStartupMessages({
 run_name <- file_name(primary = run_name)
 
 # Create sub directory for output
-folder <- dir_create(path = glue("output/{run_name}"))
+folder <- dir_create(path = glue("forecast/{run_name}"))
 
 # Parallel computing
 plan(multisession)

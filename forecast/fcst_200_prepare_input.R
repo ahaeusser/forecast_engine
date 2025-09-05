@@ -55,7 +55,7 @@ split_frame <- make_split(
 # Reduce number of series and splits in split_frame for fast testing
 if (test_run == TRUE) {
   
-  random_series <- c("M11505", "M13093", "M14966", "M16895", "M17447")
+  random_series <- unique(main_frame$series)[1:5]
   
   split_frame <- split_frame %>%
     filter(!!sym(series_id) %in% random_series)

@@ -3,7 +3,7 @@
 
 # Data set --------------------------------------------------------------------
 
-input_file <- "data/main_mth_sample.rds"
+input_file <- "data/main_qtr_hyperparameter.rds"
 
 series_id <- "series"             # unique identifier for time series
 value_id <- "value"               # identifier for measurement column
@@ -18,16 +18,16 @@ context <- list(
 # Setup for run ---------------------------------------------------------------
 
 set_warn <- -1                    # warnings are suppressed
-run_name <- "M4_Monthly_Sample"   # set a name for the run
+run_name <- "quarterly_pars"      # set a name for the run
 Sys.setlocale("LC_TIME", "C")     # change default location and time
 
-test_run <- FALSE                 # test run or full run?
+test_run <- TRUE                  # test run or full run?
 
 # Setup for time series cross validation --------------------------------------
 
 type <- "last"                    # type of initial training window
-value <- 17                       # size for initial training window
-n_ahead <- 18                     # size for testing window (forecast horizon)
+value <- 7                        # size for initial training window
+n_ahead <- 8                      # size for testing window (forecast horizon)
 n_skip <- 0                       # skip no observations
 n_lag <- 0                        # no lag
 mode <- "slide"                   # fixed window approach
@@ -40,14 +40,14 @@ benchmark <- NULL                 # Benchmark method for rMAE
 
 # Modeling --------------------------------------------------------------------
 
-periods <- c(12)                  # seasonal periods
+periods <- c(4)                   # seasonal periods
 outlier <- TRUE                   # outlier adjustment
 shift <- 200                      # constant shift to avoid negative values (DSHW)
 
 models <- c(
-  # "NAIVE",
-  # "DRIFT",
-  # "SNAIVE",
+  "NAIVE",
+  "DRIFT",
+  "SNAIVE",
   # "MEAN",
   # "MEDIAN",
   # "TSLM",
