@@ -3,7 +3,7 @@
 
 # Data set --------------------------------------------------------------------
 
-input_file <- "data/main_mth_hyperparameter.rds"
+input_file <- "data/main_mth_parameter.rds"
 
 series_id <- "series"             # unique identifier for time series
 value_id <- "value"               # identifier for measurement column
