@@ -3,30 +3,13 @@
 
 # Pre-processing --------------------------------------------------------------
 
-source("hyperparameters/pars_100_config.R")
+source("parameter/pars_100_config.R")
 
 # Directory and file names, forecast horizon and period
 files <- list(
-  "output/20250815_pars_monthly_aic.rds",
-  "output/20250818_pars_monthly_aicc.rds",
-  "output/20250822_pars_monthly_bic.rds",
-  "output/20250827_pars_monthly_hqc.rds",
-  "output/20250827_pars_quarterly_aic.rds",
-  "output/20250827_pars_quarterly_aicc.rds",
-  "output/20250828_pars_quarterly_bic.rds",
-  "output/20250828_pars_quarterly_hqc.rds"
+  "output/20250904_pars_monthly_aic.rds",
+  "output/20250904_pars_monthly_aicc.rds"
 )
-
-
-#################################################
-files <- list(
-  "hyperparameters/20250904_pars_monthly_aic.rds",
-  "hyperparameters/20250904_pars_monthly_bic.rds",
-  "hyperparameters/20250904_pars_quarterly_bic.rds",
-  "hyperparameters/20250904_pars_quarterly_hqc.rds"
-)
-#################################################
-
 
 # Read rds-files and combine data frames row-wise
 pars_frame <- bind_rows(lapply(files, readRDS))

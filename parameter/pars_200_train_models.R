@@ -3,7 +3,7 @@
 
 # Pre-processing --------------------------------------------------------------
 
-source("hyperparameters/pars_100_config_file.R")
+source("parameter/pars_100_config_file.R")
 
 # Parallel computing
 plan(multisession)
@@ -20,13 +20,13 @@ test_run <- FALSE
 
 # Directory and file names, forecast horizon and period
 if (set_freq == "monthly") {
-  file_main <- "data/main_mth_hyperparameter.rds"
+  file_main <- "data/main_mth_parameter.rds"
   n_ahead <- 18
   periods <- 12
 }
 
 if (set_freq == "quarterly") {
-  file_main <- "data/main_qtr_hyperparameter.rds"
+  file_main <- "data/main_qtr_parameter.rds"
   n_ahead <- 8
   periods <- 4
 }
@@ -147,7 +147,7 @@ pars_frame <- pars_frame %>%
 
 # Saving object to the path
 file_name <- paste0(
-  "hyperparameters/", 
+  "parameter/", 
   format(Sys.time(), "%Y%m%d"), "_pars_", set_freq, "_", set_inf_crit,
   ".rds")
 

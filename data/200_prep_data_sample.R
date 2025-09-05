@@ -13,11 +13,11 @@ save_data <- TRUE
 
 # Sample 1, used for hyperparameters sweep
 n_seed <- 42
-sample <- "Hyperparameter"
+sample <- "Parameter"
 
 # # Sample 2, used for forecast benchmark
 # n_seed <- 123
-# sample <- "Forecasting"
+# sample <- "Forecast"
 
 n_obs_mth <- 240
 n_series_mth <- 2400
