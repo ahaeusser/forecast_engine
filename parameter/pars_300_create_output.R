@@ -8,7 +8,9 @@ source("parameter/pars_100_config_file.R")
 # Directory and file names, forecast horizon and period
 files <- list(
   "output/20250904_pars_quarterly_aic.rds",
-  "output/20250904_pars_quarterly_aicc.rds"
+  "output/20250904_pars_quarterly_aicc.rds",
+  "output/20250905_pars_quarterly_bic.rds",
+  "output/20250905_pars_quarterly_hqc.rds"
 )
 
 # Read rds-files and combine data frames row-wise
