@@ -3,12 +3,12 @@
 
 # Pre-processing --------------------------------------------------------------
 
-source("parameter/pars_100_config.R")
+source("parameter/pars_100_config_file.R")
 
 # Directory and file names, forecast horizon and period
 files <- list(
-  "output/20250904_pars_monthly_aic.rds",
-  "output/20250904_pars_monthly_aicc.rds"
+  "output/20250904_pars_quarterly_aic.rds",
+  "output/20250904_pars_quarterly_aicc.rds"
 )
 
 # Read rds-files and combine data frames row-wise
@@ -16,8 +16,8 @@ pars_frame <- bind_rows(lapply(files, readRDS))
 
 # Table main text (top n models, one table per frequency) ---------------------
 
-set_freq <- "monthly"
-# set_freq <- "quarterly"
+# set_freq <- "monthly"
+set_freq <- "quarterly"
 n_rows <- 30
 
 # Average sMAPE and MASE and combine with hyperparameters
@@ -175,8 +175,8 @@ pars_dist <- bind_rows(
 
 # Tables appendix (one table per frequency) -----------------------------------
 
-set_freq <- "monthly"
-# set_freq <- "quarterly"
+# set_freq <- "monthly"
+set_freq <- "quarterly"
 
 # Create table as LaTeX code
 pars_dist %>%
