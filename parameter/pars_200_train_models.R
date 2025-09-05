@@ -16,7 +16,7 @@ set_inf_crit <- "bic"
 # Outlier adjustment
 outlier <- TRUE
 # Test run
-test_run <- TRUE
+test_run <- FALSE
 
 # Directory and file names, forecast horizon and period
 if (set_freq == "monthly") {
