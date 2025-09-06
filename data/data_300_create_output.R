@@ -4,30 +4,59 @@ library(tscv)
 library(feasts)
 library(tsibble)
 
-# Pre-processing --------------------------------------------------------------
+# Load data ===================================================================
+
+### TO DO #####################################################################
+# main_mth_total
+# meta_mth_total
+# meta_mth_forecast
+# meta_mth_parameter
+
+# Main files ------------------------------------------------------------------
 
 # Directory and file names
-files_mth <- list(
+files_main_mth <- list(
   "data/main_mth_total.rds",
   "data/main_mth_parameter.rds",
   "data/main_mth_forecast.rds"
 )
 
 # Read rds-files and combine data frames row-wise
-main_frame_mth <- bind_rows(lapply(files_mth, readRDS))
+main_frame_mth <- bind_rows(lapply(files_main_mth, readRDS))
 
 # Directory and file names
-files_qtr <- list(
+files_main_qtr <- list(
   "data/main_qtr_total.rds",
   "data/main_qtr_parameter.rds",
   "data/main_qtr_forecast.rds"
 )
 
 # Read rds-files and combine data frames row-wise
-main_frame_qtr <- bind_rows(lapply(files_qtr, readRDS))
+main_frame_qtr <- bind_rows(lapply(files_main_qtr, readRDS))
 
-# Figure 1 --------------------------------------------------------------------
-# Exploratory data analysis (trend, seasonality, etc.)
+# Meta files ------------------------------------------------------------------
+
+# Directory and file names
+files_meta_mth <- list(
+  "data/meta_mth_total.rds",
+  "data/meta_mth_parameter.rds",
+  "data/meta_mth_forecast.rds"
+)
+
+# Read rds-files and combine data frames row-wise
+meta_frame_mth <- bind_rows(lapply(files_meta_mth, readRDS))
+
+# Directory and file names
+files_meta_qtr <- list(
+  "data/meta_qtr_total.rds",
+  "data/meta_qtr_parameter.rds",
+  "data/meta_qtr_forecast.rds"
+)
+
+# Read rds-files and combine data frames row-wise
+meta_frame_qtr <- bind_rows(lapply(files_meta_qtr, readRDS))
+
+# Exploratory data analysis (trend, seasonality, etc.) ========================
 
 # Prepare data
 feature_frame_mth <- main_frame_mth %>%
@@ -48,6 +77,8 @@ feature_frame <- bind_rows(
   feature_frame_mth,
   feature_frame_qtr
 )
+
+
 
 
 meta_frame <- bind_rows(
@@ -151,23 +182,3 @@ ggsave(
   units = "cm"
 )
 
-
-plot <- dml(ggobj = p)
-pptx <- read_pptx()
-pptx <- add_slide(x = pptx)
-pptx <- ph_with(
-  x = pptx,
-  value = plot,
-  location = ph_location(
-    "body",
-    left = 1,
-    top = 1,
-    width = 8,
-    height = 5
-  )
-)
-
-print(
-  x = pptx,
-  target = "slides/figure_01_data_monthly.pptx"
-)
