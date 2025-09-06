@@ -16,6 +16,25 @@ files <- list(
 # Read rds-files and combine data frames row-wise
 pars_frame <- bind_rows(lapply(files, readRDS))
 
+
+### TO BE DELETED #############################################################
+files_mth <- list(
+  "output/20250815_pars_monthly_aic.rds",
+  "output/20250818_pars_monthly_aicc.rds",
+  "output/20250822_pars_monthly_bic.rds",
+  "output/20250827_pars_monthly_hqc.rds"
+)
+
+# Read rds-files and combine data frames row-wise
+pars_frame_mth <- bind_rows(lapply(files_mth, readRDS))
+
+pars_frame_mth <- pars_frame_mth %>%
+  mutate(freq = "monthly", .before = model)
+
+pars_frame <- bind_rows(pars_frame, pars_frame_mth)
+###############################################################################
+
+
 # Table main text (top n models, one table per frequency) ---------------------
 
 # set_freq <- "monthly"
@@ -192,6 +211,11 @@ pars_dist %>%
 
 # Figure (one figure for both frequencies) ------------------------------------
 
+# set_metric <- "mase_mean"
+set_metric <- "mase_median"
+# set_metric <- "smape_mean"
+# set_metric <- "smape_median"
+
 # Reorder facets manually
 pars_dist$par <- factor(
   pars_dist$par,
@@ -220,7 +244,7 @@ pars_dist <- pars_dist %>%
 # find row(s) with minimum mase_mean per facet
 min_points <- pars_dist %>%
   group_by(freq, par) %>%
-  slice_min(mase_mean, n = 1, with_ties = FALSE) %>%
+  slice_min(!!sym(set_metric), n = 1, with_ties = FALSE) %>%
   ungroup()
 
 
@@ -228,7 +252,7 @@ p <- ggplot(
   data = pars_dist,
   aes(
     x = factor(value),
-    y = mase_mean,
+    y = !!sym(set_metric),
     group = 1)
 )
 
@@ -239,12 +263,12 @@ p <- p + geom_point(
   data = min_points,
   aes(
     x = factor(value), 
-    y = mase_mean),
+    y = !!sym(set_metric)),
   color = "#F8766D", 
   size = 5)
 
 p <- p + facet_wrap(par ~ freq, scales = "free", ncol = 2)
 p <- p + coord_flip()
-p <- p + labs(x = "Hyperparameter", y = "Mean MASE")
+p <- p + labs(x = "Hyperparameter", y = set_metric)
 p <- p + theme_tscv()
 p
