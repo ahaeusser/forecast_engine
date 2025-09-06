@@ -9,15 +9,16 @@ library(tidyverse)
 # Change default location and time
 Sys.setlocale("LC_TIME", "C")
 
-save_data <- TRUE
+save_sample <- TRUE
+save_total <- FALSE
 
 # Sample 1, used for hyperparameters sweep
 n_seed <- 42
 sample <- "Parameter"
 
-# # Sample 2, used for forecast benchmark
-# n_seed <- 123
-# sample <- "Forecast"
+# Sample 2, used for forecast benchmark
+n_seed <- 123
+sample <- "Forecast"
 
 n_obs_mth <- 240
 n_series_mth <- 2400
@@ -37,17 +38,17 @@ meta_qtr_full <- read_rds(file = "data/meta_qtr_full.rds")
 
 
 # M4 dataset (full) -----------------------------------------------------------
-main_mth_full <- main_mth_full %>%
-  mutate(dataset = "Full")
+main_mth_total <- main_mth_full %>%
+  mutate(dataset = "Total")
 
-meta_mth_full <- meta_mth_full %>%
-  mutate(dataset = "Full")
+meta_mth_total <- meta_mth_full %>%
+  mutate(dataset = "Total")
 
-main_qtr_full <- main_qtr_full %>%
-  mutate(dataset = "Full")
+main_qtr_total <- main_qtr_full %>%
+  mutate(dataset = "Total")
 
-meta_qtr_full <- meta_qtr_full %>%
-  mutate(dataset = "Full")
+meta_qtr_total <- meta_qtr_full %>%
+  mutate(dataset = "Total")
 
 
 # Random sample from M4 dataset
@@ -55,7 +56,7 @@ meta_qtr_full <- meta_qtr_full %>%
 
 set.seed(n_seed)
 
-meta_mth_sample <- meta_mth_full %>%
+meta_mth_sample <- meta_mth_total %>%
   filter(n_obs <= n_obs_mth)
 
 set_series <- sample(
@@ -67,7 +68,7 @@ meta_mth_sample <- meta_mth_sample %>%
   filter(series %in% set_series) %>%
   mutate(dataset = sample)
 
-main_mth_sample <- main_mth_full %>%
+main_mth_sample <- main_mth_total %>%
   filter(series %in% set_series) %>%
   mutate(dataset = sample)
 
@@ -76,7 +77,7 @@ main_mth_sample <- main_mth_full %>%
 
 set.seed(n_seed)
 
-meta_qtr_sample <- meta_qtr_full %>%
+meta_qtr_sample <- meta_qtr_total %>%
   filter(n_obs <= n_obs_qtr)
 
 set_series <- sample(
@@ -88,14 +89,14 @@ meta_qtr_sample <- meta_qtr_sample %>%
   filter(series %in% set_series) %>%
   mutate(dataset = sample)
 
-main_qtr_sample <- main_qtr_full %>%
+main_qtr_sample <- main_qtr_total %>%
   filter(series %in% set_series) %>%
   mutate(dataset = sample)
 
 
 # Save data -------------------------------------------------------------------
 
-if (save_data == TRUE) {
+if (save_sample == TRUE) {
   # Main data
   saveRDS(
     object = main_mth_sample,
@@ -122,3 +123,35 @@ if (save_data == TRUE) {
     compress = "xz"
   )
 }
+
+
+if (save_total == TRUE) {
+  saveRDS(
+    object = main_mth_total,
+    file = "data/main_mth_total.rds",
+    compress = "xz"
+  )
+  
+  saveRDS(
+    object = main_qtr_total,
+    file = "data/main_qtr_total.rds",
+    compress = "xz"
+  )
+  
+  saveRDS(
+    object = meta_mth_total,
+    file = "data/meta_mth_total.rds",
+    compress = "xz"
+  )
+  
+  saveRDS(
+    object = meta_qtr_total,
+    file = "data/meta_qtr_total.rds",
+    compress = "xz"
+  )
+}
+
+
+
+
+
