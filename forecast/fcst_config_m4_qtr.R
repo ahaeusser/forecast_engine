@@ -21,7 +21,7 @@ set_warn <- -1                    # warnings are suppressed
 run_name <- "quarterly_pars"      # set a name for the run
 Sys.setlocale("LC_TIME", "C")     # change default location and time
 
-test_run <- TRUE                  # test run or full run?
+test_run <- FALSE                 # test run or full run?
 
 # Setup for time series cross validation --------------------------------------
 
@@ -48,12 +48,12 @@ models <- c(
   "NAIVE",
   "DRIFT",
   "SNAIVE",
-  # "MEAN",
+  "MEAN",
   # "MEDIAN",
   # "TSLM",
   # "ARIMA",
-  # "ETS",
-  # "THETA", 
+  "ETS",
+  "THETA", 
   # "TBATS",
   # "STL-NAIVE",
   # "STL-ARIMA",

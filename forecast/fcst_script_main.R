@@ -1,8 +1,8 @@
 
 ### Main script for calculations ##############################################
 
-source("forecast/fcst_config_m4_mth.R")
-# source("forecast/fcst_config_m4_qtr.R")
+# source("forecast/fcst_config_m4_mth.R")
+source("forecast/fcst_config_m4_qtr.R")
 
 source("forecast/fcst_100_pre_processing.R")
 source("forecast/fcst_200_prepare_input.R")
