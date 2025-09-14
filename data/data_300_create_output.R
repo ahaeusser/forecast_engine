@@ -145,19 +145,37 @@ table_meta %>%
 
 
 
-meta_frame <- meta_frame %>%
-  filter(value <= 500)
+meta_frame2 <- meta_frame %>%
+  pivot_wider(
+    names_from = metric,
+    values_from = value) %>%
+  mutate(
+    Length = log10(Length),
+    Trend = exp(Trend)
+    ) %>%
+  pivot_longer(
+    cols = c("Length", "Season", "Trend"),
+    names_to = "metric",
+    values_to = "value"
+  )
+
+# meta_frame2 <- meta_frame %>%
+#   filter(metric == "Trend")
 
 p <- ggplot()
 
 p <- p + geom_density(
-  data = meta_frame,
+  data = meta_frame2,
   aes(x = value, color = dataset, fill = dataset),
   alpha = 0.05,
   size = 0.8
 )
 
 # p <- p + scale_x_log10()
+# p <- p + scale_x_continuous(trans = "exp")
+
+p <- p + scale_color_manual(values=c("grey35", "#00BFC4", "#F8766D"))
+p <- p + scale_fill_manual(values=c("grey35", "#00BFC4", "#F8766D"))
 
 p <- p + facet_wrap(
   freq ~ metric,
@@ -170,6 +188,13 @@ p <- p + labs(y = "Density")
 p <- p + theme_tscv()
 
 p
+
+
+# p3 <- p
+# library(patchwork)
+# p <- p1 + p2 + p3
+# combined <- p1 + p2 + p3 & theme(legend.position = "bottom")
+# combined + plot_layout(guides = "collect")
 
 
 figure_name <- paste0("figure_01_data_monthly",".pdf")
