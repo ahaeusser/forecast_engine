@@ -186,23 +186,17 @@ p <- p + facet_wrap(
 p <- p + labs(x = "Value")
 p <- p + labs(y = "Density")
 p <- p + theme_tscv()
-
 p
 
 
-# p3 <- p
-# library(patchwork)
-# p <- p1 + p2 + p3
-# combined <- p1 + p2 + p3 & theme(legend.position = "bottom")
-# combined + plot_layout(guides = "collect")
-
-
-figure_name <- paste0("figure_01_data_monthly",".pdf")
+figure_name <- "output/figure_01_data_monthly.pdf"
+fig_width <- 17
+fig_hight <- 15
 
 ggsave(
   filename = figure_name,
-  width = 17, # 25
-  height = 15, # 10
+  width = fig_width,
+  height = fig_hight,
   units = "cm"
 )
 
