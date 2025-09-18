@@ -186,7 +186,7 @@ p2 <- p2 + theme(legend.position = "bottom")
 p <- p1 + p2
 p
 
-figure_name <- "output/figure_03_fcst_pars2.pdf"
+figure_name <- "output/figure_03_fcst_pars.pdf"
 fig_width <- 17
 fig_hight <- 12
 
