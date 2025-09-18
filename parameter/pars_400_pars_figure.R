@@ -6,8 +6,13 @@ library(tidyverse)
 library(echos)
 library(tsibble)
 library(fabletools)
+library(patchwork)
+library(tscv)
 
 # Configuration ---------------------------------------------------------------
+
+# Change default location and time
+Sys.setlocale("LC_TIME", "C")
 
 # Forecast horizon
 n_ahead <- 18
@@ -17,17 +22,22 @@ fig_ncol <- 2
 alpha <- tibble(
   par = "Leakage Rate",
   alpha = seq(0.1, 1.0, 0.1),
-  rho = 1
+  rho = 1) %>%
+    mutate(
+    .model = paste0("alpha = ", alpha), 
+    .before = par
 )
 
 rho <- tibble(
   par = "Spectral Radius",
   alpha = 1,
-  rho = seq(0.2, 1.2, 0.1)
+  rho = seq(0.2, 1.2, 0.1)) %>%
+    mutate(
+    .model = paste0("rho = ", rho), 
+    .before = par
 )
 
-pars <- bind_rows(alpha, rho) %>%
-  mutate(id = paste0("alpha = ", alpha, " / rho = ", rho), .before = par)
+pars <- bind_rows(alpha, rho)
 
 
 # Prepare data and train model ------------------------------------------------
@@ -50,7 +60,7 @@ mable_frame <- map(
   .f = ~{
     train_frame %>%
       model(
-        !!(pars[["id"]][.x]) := ESN(
+        !!(pars[[".model"]][.x]) := ESN(
           value, 
           alpha = pars[["alpha"]][.x], 
           rho = pars[["rho"]][.x]
@@ -89,7 +99,7 @@ fcst <- map_dfr(
 #     test_frame %>%
 #       as_tibble() %>%
 #       mutate(type = "ACTUAL") %>%
-#       mutate(.model = pars[["id"]][.x]) %>%
+#       mutate(.model = pars[[".model"]][.x]) %>%
 #       select(series, .model, type, index, value)
 #   }
 # )
@@ -99,86 +109,91 @@ fcst <- map_dfr(
 #   mutate(index = as.Date(index))
 
 
-pars <- pars %>% rename(.model = id)
-
 fcst <- left_join(
   x = fcst,
   y = pars,
   by = ".model") %>%
-  mutate(index = as.Date(index))
-
-
-fcst <- fcst %>%
-  pivot_longer(
-    cols = c("alpha", "rho"),
-    names_to = "par2",
-    values_to = "value2"
-  )
+  mutate(index = as.Date(index)
+)
 
 
 
-# Plot data -------------------------------------------------------------------
-p <- ggplot()
+# Plot leakage rate -----------------------------------------------------------
 
-p <- p + geom_line(
-  data = fcst,
+fcst_alpha <- fcst %>%
+  filter(par == "Leakage Rate")
+
+p1 <- ggplot()
+
+p1 <- p1 + geom_line(
+  data = fcst_alpha,
+  linewidth = 0.8,
   aes(
     x = index,
     y = value,
-    group = interaction(series, .model, drop = TRUE),
-    color = value2,
+    group = .model,
+    color = alpha,
   )
 )
 
-# p <- p + scale_color_manual(values = c("grey35", "#F8766D", "#00BFC4"))
-# p <- p + scale_size_manual(values = c(0.5, 0.5, 1.0))
+p1 <- p1 + scale_color_gradient(low = "#00BFC4", high = "#F8766D")
 
-# p <- p + scale_color_continuous()
-p <- p + scale_color_viridis_c(name = "value2") 
-
-p <- p + facet_wrap(
+p1 <- p1 + facet_wrap(
   vars(par),
   ncol = fig_ncol,
   scales = "free")
 
-p <- p + labs(x = "Time")
-p <- p + labs(y = "Value")
-p <- p + scale_x_date(labels = scales::label_date_short())
-p <- p + theme_tscv()
-# p <- p + theme(legend.position="none")
-p
+p1 <- p1 + labs(x = "Time")
+p1 <- p1 + labs(y = "Value")
+p1 <- p1 + scale_x_date(labels = scales::label_date_short())
+p1 <- p1 + theme_minimal()
+p1 <- p1 + theme(legend.position = "bottom")
 
 
+# Plot spectral radius --------------------------------------------------------
 
+fcst_rho <- fcst %>%
+  filter(par == "Spectral Radius")
 
+p2 <- ggplot()
 
-
-
-fcst <- fcst %>%
-  mutate(
-    value2 = as.numeric(value2),     # just in case it's character
-    index  = as.Date(index)          # just in case it's character
+p2 <- p2 + geom_line(
+  data = fcst_rho,
+  linewidth = 0.8,
+  aes(
+    x = index,
+    y = value,
+    group = .model,
+    color = rho,
   )
+)
 
-p <- ggplot(fcst, aes(index, value)) +
-  geom_line(
-    aes(
-      color = value2,
-      group = interaction(series, .model, drop = TRUE)  # one line per model run
-    ),
-    linewidth = 0.3,
-    alpha = 0.85
-  ) +
-  facet_wrap(vars(par), ncol = fig_ncol, scales = "free_y") +  # free_y usually what you want
-  scale_color_viridis_c(name = "value2") +                     # continuous color
-  scale_x_date(labels = scales::label_date_short()) +
-  labs(x = "Time", y = "Value") +
-  theme_tscv()
+p2 <- p2 + scale_color_gradient(low = "#00BFC4", high = "#F8766D")
 
+p2 <- p2 + facet_wrap(
+  vars(par),
+  ncol = fig_ncol,
+  scales = "free")
+
+p2 <- p2 + labs(x = "Time")
+p2 <- p2 + labs(y = "Value")
+p2 <- p2 + scale_x_date(labels = scales::label_date_short())
+p2 <- p2 + theme_tscv()
+p2 <- p2 + theme(legend.position = "bottom")
+
+
+# Combine subplots and save as pdf --------------------------------------------
+p <- p1 + p2
 p
 
+figure_name <- "output/figure_03_fcst_pars2.pdf"
+fig_width <- 17
+fig_hight <- 12
 
-
-
-
+ggsave(
+  filename = figure_name,
+  width = fig_width,
+  height = fig_hight,
+  units = "cm"
+)
 
