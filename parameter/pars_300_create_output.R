@@ -7,6 +7,9 @@ source("parameter/pars_100_config_file.R")
 
 # Directory and file names, forecast horizon and period
 files <- list(
+  "output/20250912_pars_monthly_aic.rds",
+  "output/20250918_pars_monthly_aicc.rds",
+  "output/20250920_pars_monthly_bic.rds",
   "output/20250904_pars_quarterly_aic.rds",
   "output/20250904_pars_quarterly_aicc.rds",
   "output/20250905_pars_quarterly_bic.rds",
@@ -15,25 +18,6 @@ files <- list(
 
 # Read rds-files and combine data frames row-wise
 pars_frame <- bind_rows(lapply(files, readRDS))
-
-
-### TO BE DELETED #############################################################
-files_mth <- list(
-  "output/20250815_pars_monthly_aic.rds",
-  "output/20250818_pars_monthly_aicc.rds",
-  "output/20250822_pars_monthly_bic.rds",
-  "output/20250827_pars_monthly_hqc.rds"
-)
-
-# Read rds-files and combine data frames row-wise
-pars_frame_mth <- bind_rows(lapply(files_mth, readRDS))
-
-pars_frame_mth <- pars_frame_mth %>%
-  mutate(freq = "monthly", .before = model)
-
-pars_frame <- bind_rows(pars_frame, pars_frame_mth)
-###############################################################################
-
 
 # Table main text (top n models, one table per frequency) ---------------------
 
