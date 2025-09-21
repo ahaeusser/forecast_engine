@@ -47,12 +47,11 @@ main_frame <- m4_data %>%
   filter(series %in% c("M21655"))
 
 train_frame <- main_frame %>%
-  group_by_key() %>%
   slice_head(n = nrow(main_frame) - n_ahead)
 
 test_frame <- main_frame %>%
-  group_by_key() %>%
-  slice_tail(n = n_ahead)
+  slice_tail(n = n_ahead) %>%
+  mutate(index = as.Date(index))
 
 # Train ESN models
 mable_frame <- map(
@@ -92,30 +91,12 @@ fcst <- map_dfr(
   }
 )
 
-# # Create test data and bind row-wise
-# test <- map_dfr(
-#   .x = 1:nrow(pars),
-#   .f = ~{
-#     test_frame %>%
-#       as_tibble() %>%
-#       mutate(type = "ACTUAL") %>%
-#       mutate(.model = pars[[".model"]][.x]) %>%
-#       select(series, .model, type, index, value)
-#   }
-# )
-# 
-# # Bind all data row-wise for plotting
-# model_frame <- bind_rows(test, fcst) %>%
-#   mutate(index = as.Date(index))
-
-
 fcst <- left_join(
   x = fcst,
   y = pars,
   by = ".model") %>%
   mutate(index = as.Date(index)
 )
-
 
 
 # Plot leakage rate -----------------------------------------------------------
@@ -136,7 +117,18 @@ p1 <- p1 + geom_line(
   )
 )
 
+p1 <- p1 + geom_line(
+  data = test_frame,
+  linewidth = 0.8,
+  color = "grey35",
+  aes(
+    x = index,
+    y = value
+  )
+)
+
 p1 <- p1 + scale_color_gradient(low = "#00BFC4", high = "#F8766D")
+p1 <- p1 + ylim(4700, 6800)
 
 p1 <- p1 + facet_wrap(
   vars(par),
@@ -146,7 +138,7 @@ p1 <- p1 + facet_wrap(
 p1 <- p1 + labs(x = "Time")
 p1 <- p1 + labs(y = "Value")
 p1 <- p1 + scale_x_date(labels = scales::label_date_short())
-p1 <- p1 + theme_minimal()
+p1 <- p1 + theme_tscv()
 p1 <- p1 + theme(legend.position = "bottom")
 
 
@@ -168,7 +160,19 @@ p2 <- p2 + geom_line(
   )
 )
 
+p2 <- p2 + geom_line(
+  data = test_frame,
+  linewidth = 0.8,
+  color = "grey35",
+  aes(
+    x = index,
+    y = value
+  )
+)
+
+
 p2 <- p2 + scale_color_gradient(low = "#00BFC4", high = "#F8766D")
+p2 <- p2 + ylim(4700, 6800)
 
 p2 <- p2 + facet_wrap(
   vars(par),
