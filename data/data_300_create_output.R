@@ -189,7 +189,7 @@ p <- p + theme_tscv()
 p
 
 
-figure_name <- "output/figure_01_data_monthly.pdf"
+figure_name <- "output/figure_01_data_summary.pdf"
 fig_width <- 17
 fig_hight <- 15
 
