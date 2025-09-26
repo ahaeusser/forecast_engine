@@ -10,6 +10,7 @@ files <- list(
   "output/20250912_pars_monthly_aic.rds",
   "output/20250918_pars_monthly_aicc.rds",
   "output/20250920_pars_monthly_bic.rds",
+  "output/20250924_pars_monthly_hqc.rds",
   "output/20250904_pars_quarterly_aic.rds",
   "output/20250904_pars_quarterly_aicc.rds",
   "output/20250905_pars_quarterly_bic.rds",
@@ -240,7 +241,7 @@ p <- ggplot(
     group = 1)
 )
 
-p <- p + geom_point(color = "grey35", size = 4)
+p <- p + geom_point(color = "grey35", size = 3)
 p <- p + geom_line(color = "grey35", size = 1)
 
 p <- p + geom_point(
@@ -248,11 +249,26 @@ p <- p + geom_point(
   aes(
     x = factor(value), 
     y = !!sym(set_metric)),
-  color = "#F8766D", 
-  size = 5)
+  color = "#00BFC4", 
+  size = 4)
 
-p <- p + facet_wrap(par ~ freq, scales = "free", ncol = 2)
+# p <- p + facet_wrap(par ~ freq, scales = "free", ncol = 2)
+p <- p + facet_grid(par ~ freq, scales = "free")
+
+
 p <- p + coord_flip()
-p <- p + labs(x = "Hyperparameter", y = set_metric)
+p <- p + labs(x = "Hyperparameter", y = "Median MASE")
 p <- p + theme_tscv()
 p
+
+figure_name <- "output/figure_04_pars_summary.pdf"
+fig_width <- 17
+fig_hight <- 21
+
+ggsave(
+  filename = figure_name,
+  width = fig_width,
+  height = fig_hight,
+  units = "cm"
+)
+
