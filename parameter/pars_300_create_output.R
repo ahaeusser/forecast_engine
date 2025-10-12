@@ -181,8 +181,8 @@ pars_dist <- bind_rows(
 
 # Tables appendix (one table per frequency) -----------------------------------
 
-# set_freq <- "monthly"
-set_freq <- "quarterly"
+set_freq <- "monthly"
+# set_freq <- "quarterly"
 
 # Create table as LaTeX code
 pars_dist %>%
