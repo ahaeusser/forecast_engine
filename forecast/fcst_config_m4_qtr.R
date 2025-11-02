@@ -3,7 +3,7 @@
 
 # Data set --------------------------------------------------------------------
 
-input_file <- "data/main_qtr_parameter.rds"
+input_file <- "data/main_qtr_forecast.rds"
 
 series_id <- "series"             # unique identifier for time series
 value_id <- "value"               # identifier for measurement column
@@ -49,21 +49,12 @@ models <- c(
   "DRIFT",
   "SNAIVE",
   "MEAN",
-  # "MEDIAN",
-  # "TSLM",
-  # "ARIMA",
+  "ARIMA",
   "ETS",
   "THETA", 
   # "TBATS",
-  # "STL-NAIVE",
-  # "STL-ARIMA",
-  # "STL-ETS",
-  # "ELM",
-  # "MLP",
-  # "NNETAR",
-  # "PROPHET",
   "ESN"
-  )
+)
 
 # Save user_settings as list --------------------------------------------------
 

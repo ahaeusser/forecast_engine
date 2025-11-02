@@ -3,7 +3,7 @@
 
 # Data set --------------------------------------------------------------------
 
-input_file <- "data/main_mth_parameter.rds"
+input_file <- "data/main_mth_forecast.rds"
 
 series_id <- "series"             # unique identifier for time series
 value_id <- "value"               # identifier for measurement column
@@ -21,7 +21,7 @@ set_warn <- -1                    # warnings are suppressed
 run_name <- "monthly_pars"        # set a name for the run
 Sys.setlocale("LC_TIME", "C")     # change default location and time
 
-test_run <- TRUE                  # test run or full run?
+test_run <- FALSE                 # test run or full run?
 
 # Setup for time series cross validation --------------------------------------
 
@@ -48,20 +48,11 @@ models <- c(
   "NAIVE",
   "DRIFT",
   "SNAIVE",
-  # "MEAN",
-  # "MEDIAN",
-  # "TSLM",
-  # "ARIMA",
-  # "ETS",
-  # "THETA", 
+  "MEAN",
+  "ARIMA",
+  "ETS",
+  "THETA", 
   # "TBATS",
-  # "STL-NAIVE",
-  # "STL-ARIMA",
-  # "STL-ETS",
-  # "ELM",
-  # "MLP",
-  # "NNETAR",
-  # "PROPHET",
   "ESN"
   )
 
