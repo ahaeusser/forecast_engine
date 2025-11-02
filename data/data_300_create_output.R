@@ -143,24 +143,13 @@ table_meta %>%
 
 
 
+# Figure 1 --------------------------------------------------------------------
 
-
+# Exclude series with too many observations
 meta_frame2 <- meta_frame %>%
-  pivot_wider(
-    names_from = metric,
-    values_from = value) %>%
-  mutate(
-    Length = log10(Length),
-    Trend = exp(Trend)
-    ) %>%
-  pivot_longer(
-    cols = c("Length", "Season", "Trend"),
-    names_to = "metric",
-    values_to = "value"
-  )
+  filter(case_when(freq == "Monthly" ~ value < 600,
+                   freq == "Quarterly" ~ value < 300))
 
-# meta_frame2 <- meta_frame %>%
-#   filter(metric == "Trend")
 
 p <- ggplot()
 
@@ -191,7 +180,61 @@ p
 
 figure_name <- "output/figure_01_data_summary.pdf"
 fig_width <- 17
-fig_hight <- 15
+fig_hight <- 12
+
+ggsave(
+  filename = figure_name,
+  width = fig_width,
+  height = fig_hight,
+  units = "cm"
+)
+
+
+
+# Figure 2 --------------------------------------------------------------------
+
+set_series <- c(
+  "M21655",
+  "M28597",
+  "M39525",
+  "M2717"
+)
+
+# Prepare data
+
+data_sample <- main_mth_total %>%
+  filter(series %in% set_series) %>%
+  mutate(series = paste0(series, " (", category, ")")) %>%
+  mutate(index = as.Date(index))
+
+# Plot data as line chart
+p <- ggplot()
+
+p <- p + geom_line(
+  data = data_sample,
+  aes(
+    x = index,
+    y = value),
+  linewidth = 0.5,
+  color = "grey35"
+)
+
+p <- p + facet_wrap(
+  vars(series),
+  ncol = 2,
+  scales = "free")
+
+p <- p + labs(x = "Time")
+p <- p + labs(y = "Value")
+p <- p + scale_x_date(labels = scales::label_date_short())
+p <- p + theme_tscv()
+p <- p + theme(legend.position = "none")
+
+p
+
+figure_name <- "output/figure_02_data_sample.pdf"
+fig_width <- 17
+fig_hight <- 10
 
 ggsave(
   filename = figure_name,
