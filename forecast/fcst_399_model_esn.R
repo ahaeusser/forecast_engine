@@ -23,6 +23,7 @@ if ("ESN" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
+          # model("ESN" = ESN(!!sym(value_id), inf_crit = "aicc", alpha = 1.0, rho = 0.9)) %>%
           model("ESN" = ESN(!!sym(value_id), inf_crit = "aic", alpha = 1.0, rho = 0.4)) %>%
           forecast(h = n_ahead)
         

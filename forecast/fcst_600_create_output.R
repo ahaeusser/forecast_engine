@@ -19,11 +19,11 @@ set_freq <- "quarterly"
 
 # Directory and file names
 if (set_freq == "monthly") {
-  file_workspace <- "forecast/20251102_131125_monthly_pars/workspace.Rdata"
+  file_workspace <- "forecast/20251103_085923_monthly_pars/workspace.Rdata"
 }
 
 if (set_freq == "quarterly") {
-  file_workspace <- "forecast/20251102_144029_quarterly_pars/workspace.Rdata"
+  file_workspace <- "forecast/20251103_113325_quarterly_pars/workspace.Rdata"
 }
 
 # Load workspace and meta data

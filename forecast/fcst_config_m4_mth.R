@@ -52,7 +52,7 @@ models <- c(
   "ARIMA",
   "ETS",
   "THETA", 
-  # "TBATS",
+  "TBATS",
   "ESN"
   )
 
