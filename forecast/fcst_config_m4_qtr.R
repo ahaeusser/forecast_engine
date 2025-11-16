@@ -18,7 +18,7 @@ context <- list(
 # Setup for run ---------------------------------------------------------------
 
 set_warn <- -1                    # warnings are suppressed
-run_name <- "quarterly_pars"      # set a name for the run
+run_name <- "quarterly_fcst"      # set a name for the run
 Sys.setlocale("LC_TIME", "C")     # change default location and time
 
 test_run <- FALSE                 # test run or full run?
