@@ -22,6 +22,24 @@ meta_qtr_parameter <- readRDS(file = "data/meta_qtr_parameter.rds")
 meta_qtr_forecast <- readRDS(file = "data/meta_qtr_forecast.rds")
 
 
+
+# Summary datasets Parameter and Forecast =====================================
+
+table_dataset <- bind_rows(
+  meta_mth_parameter %>% select(-c(start, end)),
+  meta_mth_forecast %>% select(-c(start, end)),
+  meta_qtr_parameter %>% select(-c(start, end)),
+  meta_qtr_forecast %>% select(-c(start, end))
+)
+
+table_dataset <- table_dataset %>%
+  group_by(category, dataset, freq) %>%
+  summarise(absolute = n()) %>%
+  arrange(dataset, freq, category, desc(absolute)) %>%
+  rename(Category = category) %>%
+  rename("Absolute (n)" = absolute)
+
+
 # Estimate STL features (strength of trend and seasonality) ===================
 
 # Monthly data ----------------------------------------------------------------
