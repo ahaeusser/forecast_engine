@@ -178,11 +178,8 @@ p <- p + geom_density(
   size = 0.8
 )
 
-# p <- p + scale_x_log10()
-# p <- p + scale_x_continuous(trans = "exp")
-
-p <- p + scale_color_manual(values=c("grey35", "#00BFC4", "#F8766D"))
-p <- p + scale_fill_manual(values=c("grey35", "#00BFC4", "#F8766D"))
+p <- p + scale_color_manual(values = c("grey35", "orange", "steelblue"))
+p <- p + scale_fill_manual(values = c("grey35", "orange", "steelblue"))
 
 p <- p + facet_wrap(
   freq ~ metric,

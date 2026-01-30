@@ -127,7 +127,7 @@ p1 <- p1 + geom_line(
   )
 )
 
-p1 <- p1 + scale_color_gradient(low = "#00BFC4", high = "#F8766D")
+p1 <- p1 + scale_color_gradient(low = "steelblue", high = "orange")
 p1 <- p1 + ylim(4700, 6800)
 
 p1 <- p1 + facet_wrap(
@@ -171,7 +171,7 @@ p2 <- p2 + geom_line(
 )
 
 
-p2 <- p2 + scale_color_gradient(low = "#00BFC4", high = "#F8766D")
+p2 <- p2 + scale_color_gradient(low = "steelblue", high = "orange")
 p2 <- p2 + ylim(4700, 6800)
 
 p2 <- p2 + facet_wrap(

@@ -241,15 +241,18 @@ p <- ggplot(
     group = 1)
 )
 
-p <- p + geom_point(color = "grey35", size = 3)
-p <- p + geom_line(color = "grey35", size = 1)
+# p <- p + geom_point(color = "grey35", size = 3)
+# p <- p + geom_line(color = "grey35", size = 1)
+
+p <- p + geom_line(color = "grey35", size = 0.8)
+p <- p + geom_point(shape = 21, fill = "white", colour = "grey35", size = 3, stroke = 0.8)
 
 p <- p + geom_point(
   data = min_points,
   aes(
     x = factor(value), 
     y = !!sym(set_metric)),
-  color = "#00BFC4", 
+  color = "steelblue", 
   size = 4)
 
 # p <- p + facet_wrap(par ~ freq, scales = "free", ncol = 2)
