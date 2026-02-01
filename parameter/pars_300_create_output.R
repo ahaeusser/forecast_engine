@@ -233,31 +233,78 @@ min_points <- pars_dist %>%
   ungroup()
 
 
+
+# # Old version
+# p <- ggplot(
+#   data = pars_dist,
+#   aes(
+#     x = factor(value),
+#     y = !!sym(set_metric),
+#     group = 1)
+# )
+# 
+# p <- p + geom_line(color = "grey35", size = 0.8)
+# p <- p + geom_point(shape = 21, fill = "white", colour = "grey35", size = 3, stroke = 0.8)
+# 
+# p <- p + geom_point(
+#   data = min_points,
+#   aes(
+#     x = factor(value), 
+#     y = !!sym(set_metric)),
+#   color = "steelblue", 
+#   size = 4)
+# 
+# # p <- p + facet_wrap(par ~ freq, scales = "free", ncol = 2)
+# p <- p + facet_grid(par ~ freq, scales = "free")
+# 
+# 
+# p <- p + coord_flip()
+# p <- p + labs(x = "Hyperparameter", y = "Median MASE")
+# p <- p + theme_tscv()
+# p
+# 
+# figure_name <- "output/figure_04_pars_summary.pdf"
+# fig_width <- 17
+# fig_hight <- 21
+# 
+# ggsave(
+#   filename = figure_name,
+#   width = fig_width,
+#   height = fig_hight,
+#   units = "cm"
+# )
+
+
 p <- ggplot(
   data = pars_dist,
   aes(
     x = factor(value),
     y = !!sym(set_metric),
-    group = 1)
+    colour = freq,
+    group = freq)
 )
 
-# p <- p + geom_point(color = "grey35", size = 3)
-# p <- p + geom_line(color = "grey35", size = 1)
+p <- p + geom_line()
+p <- p + geom_point(shape = 21, fill = "white", size = 3, stroke = 0.8)
 
-p <- p + geom_line(color = "grey35", size = 0.8)
-p <- p + geom_point(shape = 21, fill = "white", colour = "grey35", size = 3, stroke = 0.8)
 
 p <- p + geom_point(
   data = min_points,
   aes(
-    x = factor(value), 
-    y = !!sym(set_metric)),
-  color = "steelblue", 
+    x = factor(value),
+    y = !!sym(set_metric),
+    colour = freq),
   size = 4)
 
-# p <- p + facet_wrap(par ~ freq, scales = "free", ncol = 2)
-p <- p + facet_grid(par ~ freq, scales = "free")
+p <- p + scale_color_manual(values = c("orange", "steelblue"))
+p <- p + scale_fill_manual(values = c("orange", "steelblue"))
 
+p <- p + facet_wrap(
+  vars(par),
+  scales = "free_y",
+  axes = "all_x",
+  axis.labels = "all_x"
+)
 
 p <- p + coord_flip()
 p <- p + labs(x = "Hyperparameter", y = "Median MASE")
@@ -266,7 +313,7 @@ p
 
 figure_name <- "output/figure_04_pars_summary.pdf"
 fig_width <- 17
-fig_hight <- 21
+fig_hight <- 15
 
 ggsave(
   filename = figure_name,
