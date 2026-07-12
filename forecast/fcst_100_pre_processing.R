@@ -24,9 +24,13 @@ suppressPackageStartupMessages({
   library(fs)
   library(devtools)
   library(glue)
+  library(crayon)
   library(progressr)
   library(rstudioapi)
 })
+
+source("functions/logging.R")
+source("functions/utils.R")
 
 # Create run name with date and time
 run_name <- file_name(primary = run_name)
