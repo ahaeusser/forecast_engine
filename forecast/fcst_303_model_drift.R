@@ -1,16 +1,16 @@
 
-if ("THETA" %in% models) {
+if ("DRIFT" %in% models) {
   
   .start <- Sys.time()
-  .step <- "310_model_theta.R"
+  .step <- "303_model_drift.R"
   
-  # THETA (Theta method) ======================================================
+  # DRIFT (random walk plus drift forecast) ===================================
   
   # Train and forecast models -------------------------------------------------
   
   with_progress({
     p <- progressor(steps = nrow(split_frame))
-    future_theta <- future_map_dfr(
+    future_drift <- future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
         p()
@@ -24,7 +24,7 @@ if ("THETA" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("THETA" = THETA(!!sym(value_id))) %>%
+          model("DRIFT" = RW(!!sym(value_id) ~ drift())) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(
@@ -36,11 +36,11 @@ if ("THETA" %in% models) {
   
   # Store forecasts in future_frame -------------------------------------------
   
-  future_frame[["THETA"]] <- future_theta
-  rm(future_theta)
+  future_frame[["DRIFT"]] <- future_drift
+  rm(future_drift)
   
   # Store run time in time_frame ----------------------------------------------
-  time_frame[["THETA"]] <- as.numeric(
+  time_frame[["DRIFT"]] <- as.numeric(
     difftime(
       time1 = Sys.time(),
       time2 = .start, 

@@ -1,21 +1,18 @@
 
-if ("NNETAR" %in% models) {
+if ("ESN" %in% models) {
   
   .start <- Sys.time()
-  .step <- "319_model_nnetar.R"
+  .step <- "311_model_esn.R"
   
-  # NNETAR (Autoregressive Neural Network) ====================================
+  # ESN (Echo State Network) ==================================================
   
   # Train and forecast models -------------------------------------------------
   
-  set.seed(42)
-  
-  with_progress({
-    p <- progressor(steps = nrow(split_frame))
-    future_nnetar <- future_map_dfr(
+  future_esn <- with_progress({
+    future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
-        p()
+        
         # Slice training data according to split
         train_frame <- slice_train(
           main_frame = main_frame,
@@ -26,23 +23,28 @@ if ("NNETAR" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("NNETAR" = NNETAR(!!sym(value_id))) %>%
+          # model("ESN" = ESN(!!sym(value_id), inf_crit = "aicc", alpha = 1.0, rho = 0.9, tau = 0.4)) %>% # monthly
+          model("ESN" = ESN(!!sym(value_id), inf_crit = "aic", alpha = 1.0, rho = 0.4, tau = 0.6)) %>%  # quarterly
           forecast(h = n_ahead)
+        
         # Convert fable to future_frame
         future_frame <- make_future(
           fable = fable_frame,
           context = context
         )
-      })
+        
+      },
+      .progress = TRUE
+    )
   })
   
   # Store forecasts in future_frame -------------------------------------------
   
-  future_frame[["NNETAR"]] <- future_nnetar
-  rm(future_nnetar)
+  future_frame[["ESN"]] <- future_esn
+  rm(future_esn)
   
   # Store run time in time_frame ----------------------------------------------
-  time_frame[["NNETAR"]] <- as.numeric(
+  time_frame[["ESN"]] <- as.numeric(
     difftime(
       time1 = Sys.time(),
       time2 = .start, 

@@ -1,16 +1,16 @@
 
-if ("SNAIVE" %in% models) {
+if ("ARIMA" %in% models) {
   
   .start <- Sys.time()
-  .step <- "303_model_snaive.R"
+  .step <- "307_model_arima.R"
   
-  # SNAIVE (seasonal naive forecast) ==========================================
+  # ARIMA =====================================================================
   
   # Train and forecast models -------------------------------------------------
   
   with_progress({
     p <- progressor(steps = nrow(split_frame))
-    future_snaive <- future_map_dfr(
+    future_arima <- future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
         p()
@@ -24,7 +24,7 @@ if ("SNAIVE" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("SNAIVE" = SNAIVE(!!sym(value_id) ~ lag(max(periods)))) %>%
+          model("ARIMA" = ARIMA(!!sym(value_id))) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(
@@ -36,11 +36,11 @@ if ("SNAIVE" %in% models) {
   
   # Store forecasts in future_frame -------------------------------------------
   
-  future_frame[["SNAIVE"]] <- future_snaive
-  rm(future_snaive)
+  future_frame[["ARIMA"]] <- future_arima
+  rm(future_arima)
   
   # Store run time in time_frame ----------------------------------------------
-  time_frame[["SNAIVE"]] <- as.numeric(
+  time_frame[["ARIMA"]] <- as.numeric(
     difftime(
       time1 = Sys.time(),
       time2 = .start, 

@@ -1,16 +1,16 @@
 
-if ("DRIFT" %in% models) {
+if ("TBATS" %in% models) {
   
   .start <- Sys.time()
-  .step <- "302_model_drift.R"
+  .step <- "310_model_tbats.R"
   
-  # DRIFT (random walk plus drift forecast) ===================================
+  # TBATS (Trigonometric Box-Cox ARMA Trend and Season) =======================
   
   # Train and forecast models -------------------------------------------------
   
   with_progress({
     p <- progressor(steps = nrow(split_frame))
-    future_drift <- future_map_dfr(
+    future_tbats <- future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
         p()
@@ -24,23 +24,22 @@ if ("DRIFT" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("DRIFT" = RW(!!sym(value_id) ~ drift())) %>%
+          model("TBATS" = TBATS(!!sym(value_id), periods = periods)) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(
           fable = fable_frame,
-          context = context
-        )
+          context = context)
       })
   })
   
   # Store forecasts in future_frame -------------------------------------------
   
-  future_frame[["DRIFT"]] <- future_drift
-  rm(future_drift)
+  future_frame[["TBATS"]] <- future_tbats
+  rm(future_tbats)
   
   # Store run time in time_frame ----------------------------------------------
-  time_frame[["DRIFT"]] <- as.numeric(
+  time_frame[["TBATS"]] <- as.numeric(
     difftime(
       time1 = Sys.time(),
       time2 = .start, 

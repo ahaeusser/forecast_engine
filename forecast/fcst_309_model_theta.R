@@ -1,16 +1,16 @@
 
-if ("ARIMA" %in% models) {
+if ("THETA" %in% models) {
   
   .start <- Sys.time()
-  .step <- "308_model_arima.R"
+  .step <- "309_model_theta.R"
   
-  # ARIMA =====================================================================
+  # THETA (Theta method) ======================================================
   
   # Train and forecast models -------------------------------------------------
   
   with_progress({
     p <- progressor(steps = nrow(split_frame))
-    future_arima <- future_map_dfr(
+    future_theta <- future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
         p()
@@ -24,7 +24,7 @@ if ("ARIMA" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("ARIMA" = ARIMA(!!sym(value_id))) %>%
+          model("THETA" = THETA(!!sym(value_id))) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(
@@ -36,11 +36,11 @@ if ("ARIMA" %in% models) {
   
   # Store forecasts in future_frame -------------------------------------------
   
-  future_frame[["ARIMA"]] <- future_arima
-  rm(future_arima)
+  future_frame[["THETA"]] <- future_theta
+  rm(future_theta)
   
   # Store run time in time_frame ----------------------------------------------
-  time_frame[["ARIMA"]] <- as.numeric(
+  time_frame[["THETA"]] <- as.numeric(
     difftime(
       time1 = Sys.time(),
       time2 = .start, 

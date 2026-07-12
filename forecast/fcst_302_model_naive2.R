@@ -1,18 +1,16 @@
 
-if ("MLP" %in% models) {
+if ("NAIVE2" %in% models) {
   
   .start <- Sys.time()
-  .step <- "318_model_mlp.R"
+  .step <- "302_model_naive2.R"
   
-  # MLP (Multilayer Perceptron) ===============================================
+  # NAIVE2 (M4 naive2 forecast) ===============================================
   
   # Train and forecast models -------------------------------------------------
   
-  set.seed(42)
-  
   with_progress({
     p <- progressor(steps = nrow(split_frame))
-    future_mlp <- future_map_dfr(
+    future_naive2 <- future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
         p()
@@ -26,7 +24,7 @@ if ("MLP" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("MLP" = MLP(!!sym(value_id))) %>%
+          model("NAIVE2" = NAIVE2(!!sym(value_id) ~ season(periods))) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(
@@ -38,27 +36,31 @@ if ("MLP" %in% models) {
   
   # Store forecasts in future_frame -------------------------------------------
   
-  future_frame[["MLP"]] <- future_mlp
-  rm(future_mlp)
+  future_frame[["NAIVE2"]] <- future_naive2
+  rm(future_naive2)
   
   # Store run time in time_frame ----------------------------------------------
-  time_frame[["MLP"]] <- as.numeric(
+  
+  time_frame[["NAIVE2"]] <- as.numeric(
     difftime(
       time1 = Sys.time(),
-      time2 = .start, 
+      time2 = .start,
       units = "secs"
     )
   )
   
   write_lines(
-    x = log_time(text = .step, start = .start),
+    x = log_time(
+      text = .step,
+      start = .start
+    ),
     file = glue("{folder}/{run_name}.txt"),
     append = TRUE
   )
   
   print(
     log_time(
-      text = .step, 
+      text = .step,
       start = .start,
       ft_bold = TRUE
     )
