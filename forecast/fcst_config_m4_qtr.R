@@ -21,7 +21,7 @@ set_warn <- -1                    # warnings are suppressed
 run_name <- "quarterly_fcst"      # set a name for the run
 Sys.setlocale("LC_TIME", "C")     # change default location and time
 
-test_run <- FALSE                 # test run or full run?
+test_run <- TRUE                 # test run or full run?
 
 # Setup for time series cross validation --------------------------------------
 
@@ -46,6 +46,7 @@ shift <- 200                      # constant shift to avoid negative values (DSH
 
 models <- c(
   "NAIVE",
+  "NAIVE2",
   "DRIFT",
   "SNAIVE",
   "MEAN",

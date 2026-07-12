@@ -14,8 +14,8 @@ library(gt)
 Sys.setlocale("LC_TIME", "C")
 
 # Frequency of dataset
-# set_freq <- "monthly"
-set_freq <- "quarterly"
+set_freq <- "monthly"
+# set_freq <- "quarterly"
 
 # Directory and file names
 if (set_freq == "monthly") {
