@@ -14,16 +14,16 @@ library(gt)
 Sys.setlocale("LC_TIME", "C")
 
 # Frequency of dataset
-set_freq <- "monthly"
-# set_freq <- "quarterly"
+# set_freq <- "monthly"
+set_freq <- "quarterly"
 
 # Directory and file names
 if (set_freq == "monthly") {
-  file_workspace <- "forecast/20251116_150022_monthly_fcst/workspace.Rdata"
+  file_workspace <- "forecast/20260713_163806_monthly_fcst/workspace.Rdata"
 }
 
 if (set_freq == "quarterly") {
-  file_workspace <- "forecast/20251116_163611_quarterly_fcst/workspace.Rdata"
+  file_workspace <- "forecast/20260713_192327_quarterly_fcst/workspace.Rdata"
 }
 
 # Load workspace and meta data
@@ -94,33 +94,35 @@ mpe <- accuracy_split %>%
 
 # Tables within text ----------------------------------------------------------
 
+# MASE and sMAPE
 table_mase <- mase %>%
   group_by(model) %>%
   summarise(
-    "MASE_Mean"     = round(mean(value, na.rm = TRUE), 3),
-    "MASE_Median"   = round(median(value, na.rm = TRUE), 3)
-  ) %>%
-  ungroup() %>%
-  arrange(MASE_Mean) %>%
+    MASE_Mean   = mean(value, na.rm = TRUE),
+    MASE_Median = median(value, na.rm = TRUE),
+    .groups = "drop") %>%
   rename(Model = model)
 
 table_smape <- smape %>%
   group_by(model) %>%
   summarise(
-    "sMAPE_Mean"     = round(mean(value, na.rm = TRUE), 3),
-    "sMAPE_Median"   = round(median(value, na.rm = TRUE), 3)
-  ) %>%
-  ungroup() %>%
-  arrange(sMAPE_Mean) %>%
+    sMAPE_Mean   = mean(value, na.rm = TRUE),
+    sMAPE_Median = median(value, na.rm = TRUE),
+    .groups = "drop") %>%
   rename(Model = model)
 
-
+# Combine and calculate OWA
 table_metrics <- left_join(
   x = table_mase,
   y = table_smape,
-  by = "Model"
-)
-
+  by = "Model") %>%
+  mutate(
+    OWA = 0.5 * (
+      MASE_Mean / MASE_Mean[Model == "NAIVE2"] +
+        sMAPE_Mean / sMAPE_Mean[Model == "NAIVE2"])) %>%
+  relocate(OWA, .after = Model) %>%
+  mutate(across(where(is.numeric), ~ round(.x, 3))) %>%
+  arrange(OWA)
 
 # Computational run-time and complexity
 n_series <- length(unique(main_frame[["series"]]))
@@ -136,6 +138,8 @@ table_metrics <- left_join(
   y = table_time,
   by = "Model"
 )
+
+table_metrics
 
 table_metrics %>%
   gt() %>%
@@ -203,7 +207,3 @@ table_smape %>%
   as_latex() %>%
   as.character() %>%
   cat()
-
-
-
-
