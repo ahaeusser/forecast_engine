@@ -12,19 +12,19 @@ if ("ESN" %in% models) {
     future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
-        
         # Slice training data according to split
         train_frame <- slice_train(
           main_frame = main_frame,
           split_frame = split_frame[.x, ],
           context = context)
+        
         # Convert to tsibble, model and forecast
         fable_frame <- train_frame %>%
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          # model("ESN" = ESN(!!sym(value_id), inf_crit = "aicc", alpha = 1.0, rho = 0.9, tau = 0.4)) %>% # monthly
-          model("ESN" = ESN(!!sym(value_id), inf_crit = "aic", alpha = 1.0, rho = 0.4, tau = 0.6)) %>%  # quarterly
+          model("ESN" = ESN(!!sym(value_id), inf_crit = "aicc", alpha = 1.0, rho = 0.9, tau = 0.4)) %>% # monthly
+          # model("ESN" = ESN(!!sym(value_id), inf_crit = "aic", alpha = 1.0, rho = 0.4, tau = 0.6)) %>%  # quarterly
           forecast(h = n_ahead)
         
         # Convert fable to future_frame
@@ -32,7 +32,6 @@ if ("ESN" %in% models) {
           fable = fable_frame,
           context = context
         )
-        
       },
       .progress = TRUE
     )

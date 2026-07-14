@@ -41,8 +41,7 @@ benchmark <- NULL                 # Benchmark method for rMAE
 # Modeling --------------------------------------------------------------------
 
 periods <- c(12)                  # seasonal periods
-outlier <- TRUE                   # outlier adjustment
-shift <- 200                      # constant shift to avoid negative values (DSHW)
+outlier <- FALSE                  # outlier adjustment
 
 models <- c(
   "NAIVE",
@@ -54,8 +53,11 @@ models <- c(
   "ETS",
   "THETA", 
   "TBATS",
-  "ESN"
-  )
+  "ESN",
+  "MLP",
+  "RNN",
+  "ES-RNN"
+)
 
 # Save user_settings as list --------------------------------------------------
 
