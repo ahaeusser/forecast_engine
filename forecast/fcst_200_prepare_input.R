@@ -9,7 +9,18 @@
 input_frame <- readRDS(input_file)
 main_frame <- input_frame
 
-# Specific adjustments ........................................................
+# Test run --------------------------------------------------------------------
+
+# Reduce number of series and splits in split_frame for fast testing
+if (test_run == TRUE) {
+  
+  random_series <- unique(main_frame$series)[1:5]
+  
+  main_frame <- main_frame %>%
+    filter(!!sym(series_id) %in% random_series)
+}
+
+# Summarize data --------------------------------------------------------------
 
 main_summary <- main_frame %>%
   summarise_data(context = context)
@@ -50,17 +61,7 @@ split_frame <- make_split(
   exceed = exceed
 )
 
-# Test run --------------------------------------------------------------------
 
-# Reduce number of series and splits in split_frame for fast testing
-if (test_run == TRUE) {
-  
-  random_series <- unique(main_frame$series)[1:5]
-  
-  split_frame <- split_frame %>%
-    filter(!!sym(series_id) %in% random_series)
-  
-}
 
 # Initialize future_frame (empty object to store forecasts) --------------------
 
