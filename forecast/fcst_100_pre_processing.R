@@ -31,6 +31,7 @@ suppressPackageStartupMessages({
 
 source("functions/logging.R")
 source("functions/utils.R")
+source("functions/import_benchmarks.R")
 
 # Create run name with date and time
 run_name <- file_name(primary = run_name)
