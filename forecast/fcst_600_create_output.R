@@ -14,16 +14,18 @@ library(gt)
 Sys.setlocale("LC_TIME", "C")
 
 # Frequency of dataset
-set_freq <- "monthly"
-# set_freq <- "quarterly"
+# set_freq <- "monthly"
+set_freq <- "quarterly"
 
 # Directory and file names
 if (set_freq == "monthly") {
-  file_workspace <- "forecast/20260714_181852_monthly_fcst/workspace.Rdata"
+  file_workspace <- "forecast/20260716_114915_monthly_fcst/workspace.Rdata" # outlier = FALSE
+  file_workspace <- "forecast/20260716_144616_monthly_fcst/workspace.Rdata" # outlier = TRUE
 }
 
 if (set_freq == "quarterly") {
-  file_workspace <- "forecast/20260714_145616_quarterly_fcst/workspace.Rdata"
+  file_workspace <- "forecast/20260716_141805_quarterly_fcst/workspace.Rdata" # outlier = FALSE
+  file_workspace <- "forecast/20260716_164855_quarterly_fcst/workspace.Rdata" # outlier = TRUE
 }
 
 # Load workspace and meta data
