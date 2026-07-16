@@ -41,7 +41,7 @@ benchmark <- NULL                 # Benchmark method for rMAE
 # Modeling --------------------------------------------------------------------
 
 periods <- c(12)                  # seasonal periods
-outlier <- FALSE                  # outlier adjustment
+outlier <- TRUE                   # outlier adjustment
 
 models <- c(
   "NAIVE",
@@ -57,6 +57,13 @@ models <- c(
   "MLP",
   "RNN",
   "ES-RNN"
+)
+
+pars_esn <- list(
+  inf_crit = "aicc", 
+  alpha = 1.0, 
+  rho = 0.9, 
+  tau = 0.4
 )
 
 # Save user_settings as list --------------------------------------------------
