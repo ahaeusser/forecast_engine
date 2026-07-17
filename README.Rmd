@@ -1,35 +1,99 @@
 ---
-output: github_document
+output:
+  github_document:
+    toc: false
 ---
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- README.md is generated from README.Rmd. Please edit README.Rmd. -->
 
-```{r, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>"
-)
-```
+# Echo State Networks for Time Series Forecasting
 
-# Echo State Networks ...
+This repository contains the replication code for *Echo State Networks for
+Time Series Forecasting: Hyperparameter Sweep and Benchmarking*. The study
+evaluates a first-order autoregressive Echo State Network (ESN) on monthly and
+quarterly series from the M4 Forecasting Competition.
 
-<!-- badges: start -->
-<!-- badges: end -->
+The analysis has two stages. A **Parameter** sample is used to tune the ESN's
+leakage rate, spectral radius, reservoir size, and information criterion. A
+separate **Forecast** sample is then used to compare the selected ESN with
+simple, statistical, and competition benchmarks. Forecast accuracy is assessed
+primarily with MASE and sMAPE over the M4 horizons of 18 months and 8 quarters.
 
-The goal of forecast_engine is to ...
+## Project structure
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+| Folder | Contents |
+|---|---|
+| `data/` | Input time series and metadata for the total, Parameter, and Forecast datasets. The `data_*.R` scripts prepare the M4 data, create the two analysis samples, and produce descriptive outputs. The submission CSV files contain forecasts imported from M4 competition models. |
+| `parameter/` | Scripts for the ESN hyperparameter sweep and its summaries. The dated `.rds` files in this folder are temporary run results and can be ignored. Curated results used by the analysis are stored in `output/`. |
+| `forecast/` | Scripts for the benchmark analysis. The dated run directories contain temporary workspaces, logs, forecasts, errors, and accuracy objects; they can be ignored when reading the code. |
+| `output/` | Final data objects and figures used in the paper, including curated hyperparameter results and PDF figures. |
+| `R/` | Small helper functions for logging, file names, model import, and data handling. |
 
-```{r cars}
-summary(cars)
-```
+All scripts use relative paths and should therefore be run from the project
+root (for example, by opening `forecast_engine.Rproj`).
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date.
+## Analysis workflow
 
-You can also embed plots, for example:
+### 1. Prepare the data
 
-```{r pressure, echo = FALSE}
-plot(pressure)
-```
+The prepared `.rds` inputs are already available in `data/`. Their suffixes
+identify their role: `*_total` contains the reference M4 collection,
+`*_parameter` the tuning sample, and `*_forecast` the holdout benchmark sample.
+The `main_*` files contain observations, while the `meta_*` files contain
+series-level metadata.
 
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub.
+To rebuild or inspect the preparation steps, run the numbered scripts in order:
+
+1. `data/data_100_prep_data_full.R` extracts monthly or quarterly M4 series.
+2. `data/data_200_prep_data_sample.R` applies the history-length restriction and
+   creates the Parameter and Forecast samples.
+3. `data/data_300_create_output.R` summarizes the samples and creates the data
+   figures in `output/`.
+
+Frequency, sample, seed, and save options are set near the top of these scripts.
+
+### 2. Tune the ESN
+
+The parameter workflow is split across four scripts:
+
+- `pars_100_config_file.R` defines packages, accuracy functions, and the full
+  hyperparameter grid.
+- `pars_200_train_models.R` selects a frequency and information criterion,
+  fits the ESN configurations in parallel, and writes a dated temporary `.rds`
+  result to `parameter/`.
+- `pars_300_create_output.R` combines the curated sweep results from `output/`
+  and creates result tables and the hyperparameter summary figure.
+- `pars_400_pars_figure.R` illustrates how selected ESN parameters affect an
+  example forecast.
+
+The full sweep is computationally expensive: the paper evaluates 1,320
+configurations across 3,600 series. Check `set_freq`, `set_inf_crit`, and
+`test_run` in `pars_200_train_models.R` before starting a run.
+
+### 3. Run the forecast benchmark
+
+`forecast/fcst_script_main.R` is the benchmark entry point. It sources one of
+the monthly or quarterly configuration files and then runs preprocessing,
+model estimation, forecast evaluation, and post-processing in numerical order.
+
+Before running it:
+
+1. Select exactly one config file in `fcst_script_main.R`:
+   `fcst_config_m4_mth.R` or `fcst_config_m4_qtr.R`.
+2. Review the ESN parameters and model list in that config.
+3. Set `test_run <- FALSE` for the full sample. The monthly config is currently
+   set to `TRUE` and otherwise uses only five series.
+
+The benchmark includes naive, Naive2, drift, seasonal naive, mean, ARIMA, ETS,
+Theta, TBATS, and ESN forecasts. MLP, RNN, and ES-RNN forecasts are imported
+from the submission files in `data/`. Each run creates a dated temporary folder
+under `forecast/`; `fcst_600_create_output.R` can then be run separately after
+pointing `file_workspace` to the chosen completed run.
+
+## Requirements
+
+The analysis is written in R and relies mainly on `echos`, `tscv`, `tidyverse`,
+`tsibble`, `fable`, `feasts`, `future`, `furrr`, and `M4comp2018`. Additional
+packages are declared with `library()` at the top of the relevant scripts. No
+package lockfile is included, so record package versions when reproducing the
+paper results.
