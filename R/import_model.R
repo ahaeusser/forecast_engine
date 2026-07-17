@@ -63,10 +63,10 @@
 #'
 #' @export
 
-import_benchmarks <- function(file, 
-                              model, 
-                              main_frame,
-                              n_ahead) {
+import_model <- function(file, 
+                         model, 
+                         main_frame,
+                         n_ahead) {
   
   # Forecast origin for each selected series
   forecast_origin <- main_frame |>
