@@ -29,9 +29,12 @@ suppressPackageStartupMessages({
   library(rstudioapi)
 })
 
-source("functions/logging.R")
-source("functions/utils.R")
-source("functions/import_benchmarks.R")
+source("R/logging.R")
+source("R/lst_to_env.R")
+source("R/out.R")
+source("R/file_name.R")
+source("R/number_string.R")
+source("R/import_model.R")
 
 # Create run name with date and time
 run_name <- file_name(primary = run_name)

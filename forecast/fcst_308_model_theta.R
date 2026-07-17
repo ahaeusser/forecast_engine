@@ -1,16 +1,16 @@
 
-if ("ETS" %in% models) {
+if ("THETA" %in% models) {
   
   .start <- Sys.time()
-  .step <- "308_model_ets.R"
+  .step <- "308_model_theta.R"
   
-  # ETS (Exponential Smoothing) ===============================================
+  # THETA (Theta method) ======================================================
   
   # Train and forecast models -------------------------------------------------
   
   with_progress({
     p <- progressor(steps = nrow(split_frame))
-    future_ets <- future_map_dfr(
+    future_theta <- future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
         p()
@@ -24,7 +24,7 @@ if ("ETS" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("ETS" = ETS(!!sym(value_id))) %>%
+          model("THETA" = THETA(!!sym(value_id))) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(
@@ -36,11 +36,11 @@ if ("ETS" %in% models) {
   
   # Store forecasts in future_frame -------------------------------------------
   
-  future_frame[["ETS"]] <- future_ets
-  rm(future_ets)
+  future_frame[["THETA"]] <- future_theta
+  rm(future_theta)
   
   # Store run time in time_frame ----------------------------------------------
-  time_frame[["ETS"]] <- as.numeric(
+  time_frame[["THETA"]] <- as.numeric(
     difftime(
       time1 = Sys.time(),
       time2 = .start, 

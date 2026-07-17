@@ -62,8 +62,8 @@ models <- c(
 pars_esn <- list(
   inf_crit = "aic", 
   alpha = 1.0, 
-  rho = 0.4, 
-  tau = 0.6
+  rho = 0.3, 
+  tau = 0.4
 )
 
 # Save user_settings as list --------------------------------------------------

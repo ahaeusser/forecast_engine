@@ -21,11 +21,13 @@ set_freq <- "quarterly"
 if (set_freq == "monthly") {
   file_workspace <- "forecast/20260716_114915_monthly_fcst/workspace.Rdata" # outlier = FALSE
   file_workspace <- "forecast/20260716_144616_monthly_fcst/workspace.Rdata" # outlier = TRUE
+  file_workspace <- "forecast/20260717_112247_monthly_fcst/workspace.Rdata" # outlier = TRUE, avg pars
 }
 
 if (set_freq == "quarterly") {
   file_workspace <- "forecast/20260716_141805_quarterly_fcst/workspace.Rdata" # outlier = FALSE
   file_workspace <- "forecast/20260716_164855_quarterly_fcst/workspace.Rdata" # outlier = TRUE
+  file_workspace <- "forecast/20260717_134841_quarterly_fcst/workspace.Rdata" # outlier = TRUE, avg pars
 }
 
 # Load workspace and meta data
@@ -41,15 +43,6 @@ train_frame <- slice_train(
   split_frame = split_frame,
   context = context
 )
-
-mae_vec <- function(truth,
-                    estimate,
-                    na_rm = TRUE) {
-  
-  mean(abs(truth - estimate), na.rm = na_rm)
-}
-
-
 
 numerator <- accuracy_split %>%
   filter(metric == "MAE") %>%
@@ -142,6 +135,9 @@ table_metrics <- left_join(
 )
 
 table_metrics
+
+
+
 
 table_metrics %>%
   gt() %>%

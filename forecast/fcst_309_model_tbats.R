@@ -1,16 +1,16 @@
 
-if ("THETA" %in% models) {
+if ("TBATS" %in% models) {
   
   .start <- Sys.time()
-  .step <- "309_model_theta.R"
+  .step <- "309_model_tbats.R"
   
-  # THETA (Theta method) ======================================================
+  # TBATS (Trigonometric Box-Cox ARMA Trend and Season) =======================
   
   # Train and forecast models -------------------------------------------------
   
   with_progress({
     p <- progressor(steps = nrow(split_frame))
-    future_theta <- future_map_dfr(
+    future_tbats <- future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
         p()
@@ -24,23 +24,22 @@ if ("THETA" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("THETA" = THETA(!!sym(value_id))) %>%
+          model("TBATS" = TBATS(!!sym(value_id), periods = periods)) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(
           fable = fable_frame,
-          context = context
-        )
+          context = context)
       })
   })
   
   # Store forecasts in future_frame -------------------------------------------
   
-  future_frame[["THETA"]] <- future_theta
-  rm(future_theta)
+  future_frame[["TBATS"]] <- future_tbats
+  rm(future_tbats)
   
   # Store run time in time_frame ----------------------------------------------
-  time_frame[["THETA"]] <- as.numeric(
+  time_frame[["TBATS"]] <- as.numeric(
     difftime(
       time1 = Sys.time(),
       time2 = .start, 

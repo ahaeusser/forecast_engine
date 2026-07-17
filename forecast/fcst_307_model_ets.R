@@ -1,16 +1,16 @@
 
-if ("MEDIAN" %in% models) {
+if ("ETS" %in% models) {
   
   .start <- Sys.time()
-  .step <- "306_model_median.R"
+  .step <- "307_model_ets.R"
   
-  # MEDIAN (median forecast) ==================================================
+  # ETS (Exponential Smoothing) ===============================================
   
   # Train and forecast models -------------------------------------------------
   
   with_progress({
     p <- progressor(steps = nrow(split_frame))
-    future_median <- future_map_dfr(
+    future_ets <- future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
         p()
@@ -24,7 +24,7 @@ if ("MEDIAN" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("MEDIAN" = MEDIAN(!!sym(value_id))) %>%
+          model("ETS" = ETS(!!sym(value_id))) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(
@@ -36,11 +36,11 @@ if ("MEDIAN" %in% models) {
   
   # Store forecasts in future_frame -------------------------------------------
   
-  future_frame[["MEDIAN"]] <- future_median
-  rm(future_median)
+  future_frame[["ETS"]] <- future_ets
+  rm(future_ets)
   
   # Store run time in time_frame ----------------------------------------------
-  time_frame[["MEDIAN"]] <- as.numeric(
+  time_frame[["ETS"]] <- as.numeric(
     difftime(
       time1 = Sys.time(),
       time2 = .start, 

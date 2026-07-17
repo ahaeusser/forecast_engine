@@ -1,46 +1,53 @@
 
-if ("ARIMA" %in% models) {
+if ("ESN" %in% models) {
   
   .start <- Sys.time()
-  .step <- "307_model_arima.R"
+  .step <- "310_model_esn.R"
   
-  # ARIMA =====================================================================
+  # ESN (Echo State Network) ==================================================
   
   # Train and forecast models -------------------------------------------------
   
-  with_progress({
-    p <- progressor(steps = nrow(split_frame))
-    future_arima <- future_map_dfr(
+  future_esn <- with_progress({
+    future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
-        p()
         # Slice training data according to split
         train_frame <- slice_train(
           main_frame = main_frame,
           split_frame = split_frame[.x, ],
           context = context)
+        
         # Convert to tsibble, model and forecast
         fable_frame <- train_frame %>%
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("ARIMA" = ARIMA(!!sym(value_id))) %>%
+          model("ESN" = ESN(
+            !!sym(value_id), 
+            inf_crit = pars_esn[["inf_crit"]], 
+            alpha = pars_esn[["alpha"]], 
+            rho = pars_esn[["rho"]], 
+            tau = pars_esn[["tau"]])) %>%
           forecast(h = n_ahead)
+        
         # Convert fable to future_frame
         future_frame <- make_future(
           fable = fable_frame,
           context = context
         )
-      })
+      },
+      .progress = TRUE
+    )
   })
   
   # Store forecasts in future_frame -------------------------------------------
   
-  future_frame[["ARIMA"]] <- future_arima
-  rm(future_arima)
+  future_frame[["ESN"]] <- future_esn
+  rm(future_esn)
   
   # Store run time in time_frame ----------------------------------------------
-  time_frame[["ARIMA"]] <- as.numeric(
+  time_frame[["ESN"]] <- as.numeric(
     difftime(
       time1 = Sys.time(),
       time2 = .start, 

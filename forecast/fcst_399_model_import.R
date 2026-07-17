@@ -6,7 +6,7 @@ if (c("MLP") %in% models) {
   
   # Multilayer Perceptron (MLP) ===============================================
   
-  future_mlp <- import_benchmarks(
+  future_mlp <- import_model(
     file = "data/submission-MLP.csv",
     model = "MLP",
     main_frame = main_frame,
@@ -20,7 +20,7 @@ if (c("MLP") %in% models) {
 if (c("RNN") %in% models) {
   
   # Recurrent Neural Networks (RNN) ===========================================
-  future_rnn <- import_benchmarks(
+  future_rnn <- import_model(
     file = "data/submission-RNN.csv",
     model = "RNN",
     main_frame = main_frame,
@@ -36,7 +36,7 @@ if (c("ES-RNN") %in% models) {
   # Exponential Smoothing + Recurrent Neural Network (ES-RNN) =================
   # (winning solution; submission no. 118)
   
-  future_118 <- import_benchmarks(
+  future_118 <- import_model(
     file = "data/submission-118.csv",
     model = "ES-RNN",
     main_frame = main_frame,

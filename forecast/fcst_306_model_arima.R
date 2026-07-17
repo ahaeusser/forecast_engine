@@ -1,16 +1,16 @@
 
-if ("TBATS" %in% models) {
+if ("ARIMA" %in% models) {
   
   .start <- Sys.time()
-  .step <- "310_model_tbats.R"
+  .step <- "306_model_arima.R"
   
-  # TBATS (Trigonometric Box-Cox ARMA Trend and Season) =======================
+  # ARIMA =====================================================================
   
   # Train and forecast models -------------------------------------------------
   
   with_progress({
     p <- progressor(steps = nrow(split_frame))
-    future_tbats <- future_map_dfr(
+    future_arima <- future_map_dfr(
       .x = seq_len(nrow(split_frame)),
       .f = ~{
         p()
@@ -24,22 +24,23 @@ if ("TBATS" %in% models) {
           as_tsibble(
             index = !!sym(index_id),
             key = c(!!sym(series_id), split)) %>%
-          model("TBATS" = TBATS(!!sym(value_id), periods = periods)) %>%
+          model("ARIMA" = ARIMA(!!sym(value_id))) %>%
           forecast(h = n_ahead)
         # Convert fable to future_frame
         future_frame <- make_future(
           fable = fable_frame,
-          context = context)
+          context = context
+        )
       })
   })
   
   # Store forecasts in future_frame -------------------------------------------
   
-  future_frame[["TBATS"]] <- future_tbats
-  rm(future_tbats)
+  future_frame[["ARIMA"]] <- future_arima
+  rm(future_arima)
   
   # Store run time in time_frame ----------------------------------------------
-  time_frame[["TBATS"]] <- as.numeric(
+  time_frame[["ARIMA"]] <- as.numeric(
     difftime(
       time1 = Sys.time(),
       time2 = .start, 
