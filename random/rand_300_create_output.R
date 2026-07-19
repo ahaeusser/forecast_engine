@@ -8,7 +8,7 @@ source("random/rand_100_config_file.R")
 # Directory and file names, forecast horizon and period
 files <- list(
   "output/20260718_rand_monthly.rds",
-  "output/20260718_rand_quarterly.rds"
+  "output/20260719_rand_quarterly.rds"
 )
 
 # Read rds-files and combine data frames row-wise
