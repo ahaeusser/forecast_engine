@@ -92,49 +92,52 @@ seed_dist %>%
 
 # Figure (one figure for both frequencies) ====================================
 
-# Prepare data ----------------------------------------------------------------
+# Summarize deviations by seed ------------------------------------------------
 
-plot_frame <- seed_frame |>
-  pivot_longer(
-    cols = c(smape, mase),
-    names_to = "metric",
-    values_to = "value"
-  ) |>
-  group_by(freq, series, metric) |>
+summary_frame <- plot_frame |>
+  group_by(freq, model) |>
+  summarise(
+    q1 = quantile(deviation, probs = 0.25, na.rm = TRUE),
+    median = median(deviation, na.rm = TRUE),
+    q3 = quantile(deviation, probs = 0.75, na.rm = TRUE),
+    .groups = "drop") |>
   mutate(
-    median_value = median(value, na.rm = TRUE),
-    deviation = 100 * (value / median_value - 1)
-  ) |>
-  ungroup() |>
-  mutate(
-    metric = factor(
-      metric,
-      levels = c("smape", "mase"),
-      labels = c("sMAPE", "MASE")
+    freq = recode(
+      freq,
+      monthly = "Monthly",
+      quarterly = "Quarterly"
     )
   )
 
-# Plot deviations by seed ----------------------------------------------------
+# Plot median deviations and IQR ----------------------------------------------
 
 p <- ggplot(
-  data = plot_frame,
+  data = summary_frame,
   mapping = aes(
     x = model,
-    y = deviation
+    y = median,
+    colour = freq,
+    group = 1
   )
 )
 
-p <- p + geom_boxplot(
-  fill = "lightsteelblue",
-  colour = "grey40",
-  outlier.shape = NA
+# p <- p + geom_errorbar(
+#   aes(
+#     ymin = q1,
+#     ymax = q3),
+#   width = 0.2,
+#   linewidth = 0.6
+# )
+
+p <- p + geom_line(
+  linewidth = 0.6
 )
 
-p <- p + geom_point(
-  position = position_jitter(width = 0.15),
-  alpha = 0.4,
-  size = 1
-)
+# p <- p + geom_point(
+#   size = 2.5
+# )
+
+p <- p + geom_point(shape = 21, fill = "white", size = 3, stroke = 0.8)
 
 p <- p + geom_hline(
   yintercept = 0,
@@ -143,34 +146,35 @@ p <- p + geom_hline(
   linewidth = 0.5
 )
 
-p <- p + facet_grid(
-  rows = vars(metric),
-  cols = vars(freq),
+p <- p + facet_wrap(
+  facets = vars(freq),
   scales = "free_y"
 )
 
+p <- p + coord_flip()
+
+p <- p + scale_colour_manual(
+  values = c(
+    "Monthly" = "darkorange",
+    "Quarterly" = "steelblue"
+  ),
+  guide = "none"
+)
+
 p <- p + labs(
-  title = "Sensitivity to random initialization",
-  subtitle = "Deviation from the median accuracy for each time series",
   x = "Random initialization",
-  y = "Deviation from series median (%)"
+  y = "Deviation from series median MASE (%)"
 )
 
-p <- p + theme_minimal()
-
-p <- p + theme(
-  axis.text.x = element_text(
-    angle = 45,
-    hjust = 1
-  )
-)
-
+p <- p + theme_tscv()
 p
+
+
 
 
 figure_name <- "output/figure_05_rand_summary.pdf"
 fig_width <- 17
-fig_hight <- 15
+fig_hight <- 18
 
 ggsave(
   filename = figure_name,
