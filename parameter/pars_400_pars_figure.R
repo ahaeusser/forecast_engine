@@ -120,7 +120,7 @@ p1 <- p1 + geom_line(
 p1 <- p1 + geom_line(
   data = test_frame,
   linewidth = 0.8,
-  color = "grey35",
+  color = "black",
   aes(
     x = index,
     y = value
@@ -163,7 +163,7 @@ p2 <- p2 + geom_line(
 p2 <- p2 + geom_line(
   data = test_frame,
   linewidth = 0.8,
-  color = "grey35",
+  color = "black",
   aes(
     x = index,
     y = value
