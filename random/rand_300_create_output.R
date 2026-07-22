@@ -92,52 +92,66 @@ seed_dist %>%
 
 # Figure (one figure for both frequencies) ====================================
 
-# Summarize deviations by seed ------------------------------------------------
+# Prepare data ----------------------------------------------------------------
 
-summary_frame <- plot_frame |>
-  group_by(freq, model) |>
-  summarise(
-    q1 = quantile(deviation, probs = 0.25, na.rm = TRUE),
-    median = median(deviation, na.rm = TRUE),
-    q3 = quantile(deviation, probs = 0.75, na.rm = TRUE),
-    .groups = "drop") |>
+plot_frame <- seed_frame |>
+  group_by(freq, series) |>
+  mutate(
+    median_mase = median(mase, na.rm = TRUE),
+    deviation = 100 * (mase / median_mase - 1)
+  ) |>
+  ungroup() |>
   mutate(
     freq = recode(
       freq,
       monthly = "Monthly",
       quarterly = "Quarterly"
+    ),
+    freq = factor(
+      freq,
+      levels = c("Monthly", "Quarterly")
+    ),
+    model = factor(
+      model,
+      levels = unique(model)
     )
   )
 
-# Plot median deviations and IQR ----------------------------------------------
+plot_frame <- plot_frame |>
+  filter(deviation <= 400)
+
+# Summarize median deviation by seed ------------------------------------------
+
+summary_frame <- plot_frame |>
+  group_by(freq, model, seed) |>
+  summarise(
+    median_deviation = median(deviation, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+# Plot median deviations as dumbbell-style chart ------------------------------
 
 p <- ggplot(
   data = summary_frame,
   mapping = aes(
     x = model,
-    y = median,
-    colour = freq,
-    group = 1
+    y = median_deviation,
+    colour = freq
   )
 )
 
-# p <- p + geom_errorbar(
-#   aes(
-#     ymin = q1,
-#     ymax = q3),
-#   width = 0.2,
-#   linewidth = 0.6
-# )
-
-p <- p + geom_line(
-  linewidth = 0.6
+p <- p + geom_segment(
+  aes(
+    xend = model,
+    y = 0,
+    yend = median_deviation
+  ),
+  linewidth = 0.5
 )
 
-# p <- p + geom_point(
-#   size = 2.5
-# )
-
-p <- p + geom_point(shape = 21, fill = "white", size = 3, stroke = 0.8)
+p <- p + geom_point(
+  size = 3
+)
 
 p <- p + geom_hline(
   yintercept = 0,
@@ -155,7 +169,7 @@ p <- p + coord_flip()
 
 p <- p + scale_colour_manual(
   values = c(
-    "Monthly" = "darkorange",
+    "Monthly" = "orange",
     "Quarterly" = "steelblue"
   ),
   guide = "none"
@@ -163,7 +177,7 @@ p <- p + scale_colour_manual(
 
 p <- p + labs(
   x = "Random initialization",
-  y = "Deviation from series median MASE (%)"
+  y = "Deviation from median MASE (%)"
 )
 
 p <- p + theme_tscv()
@@ -171,10 +185,9 @@ p
 
 
 
-
 figure_name <- "output/figure_05_rand_summary.pdf"
 fig_width <- 17
-fig_hight <- 18
+fig_hight <- 17
 
 ggsave(
   filename = figure_name,
