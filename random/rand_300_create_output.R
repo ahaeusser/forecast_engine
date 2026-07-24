@@ -17,7 +17,7 @@ seed_frame <- bind_rows(lapply(files, readRDS))
 # Table main text (top n models, one table per frequency) ---------------------
 
 set_freq <- "monthly"
-# set_freq <- "quarterly"
+set_freq <- "quarterly"
 n_rows <- 30
 
 # Average sMAPE and MASE and combine with hyperparameters
@@ -78,7 +78,7 @@ seed_dist <- seed_frame %>%
 # Tables appendix (one table per frequency) -----------------------------------
 
 set_freq <- "monthly"
-# set_freq <- "quarterly"
+set_freq <- "quarterly"
 
 # Create table as LaTeX code
 seed_dist %>%

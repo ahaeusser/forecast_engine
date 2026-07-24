@@ -20,7 +20,6 @@ suppressPackageStartupMessages({
   library(furrr)
   library(tscv)
   library(echos)
-  library(fable.prophet)
   library(fs)
   library(devtools)
   library(glue)
