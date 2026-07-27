@@ -15,19 +15,15 @@ Sys.setlocale("LC_TIME", "C")
 
 # Frequency of dataset
 set_freq <- "monthly"
-# set_freq <- "quarterly"
+set_freq <- "quarterly"
 
 # Directory and file names
 if (set_freq == "monthly") {
-  # file_workspace <- "forecast/20260716_114915_monthly_fcst/workspace.Rdata" # outlier = FALSE
-  file_workspace <- "forecast/20260716_144616_monthly_fcst/workspace.Rdata" # outlier = TRUE
-  # file_workspace <- "forecast/20260717_112247_monthly_fcst/workspace.Rdata" # outlier = TRUE, avg pars
+  file_workspace <- "output/20260727_102141_monthly_fcst/workspace.Rdata"
 }
 
 if (set_freq == "quarterly") {
-  # file_workspace <- "forecast/20260716_141805_quarterly_fcst/workspace.Rdata" # outlier = FALSE
-  file_workspace <- "forecast/20260716_164855_quarterly_fcst/workspace.Rdata" # outlier = TRUE
-  # file_workspace <- "forecast/20260717_134841_quarterly_fcst/workspace.Rdata" # outlier = TRUE, avg pars
+  file_workspace <- "output/20260727_120756_quarterly_fcst/workspace.Rdata"
 }
 
 # Load workspace and meta data
@@ -136,14 +132,13 @@ table_metrics <- left_join(
 
 table_metrics
 
-
-
-
 table_metrics %>%
   gt() %>%
   as_latex() %>%
   as.character() %>%
   cat()
+
+
 
 
 # Detailed tables for appendix ------------------------------------------------
@@ -377,8 +372,8 @@ p <- p + geom_text(
 
 p <- p + scale_fill_manual(
   values = c(
-    "Row better" = "steelblue",
-    "Column better" = "orange",
+    "Row better" = "#A2C0D9",
+    "Column better" = "#FFD27F",
     "Not significant" = "grey85",
     "Diagonal" = "white"),
   breaks = c(

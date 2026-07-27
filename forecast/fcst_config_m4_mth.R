@@ -21,7 +21,7 @@ set_warn <- -1                    # warnings are suppressed
 run_name <- "monthly_fcst"        # set a name for the run
 Sys.setlocale("LC_TIME", "C")     # change default location and time
 
-test_run <- TRUE                  # test run or full run?
+test_run <- FALSE                 # test run or full run?
 
 # Setup for time series cross validation --------------------------------------
 
@@ -60,9 +60,9 @@ models <- c(
 )
 
 pars_esn <- list(
-  inf_crit = "bic", 
-  alpha = 0.9, 
-  rho = 0.7, 
+  inf_crit = "aicc", 
+  alpha = 1.0, 
+  rho = 0.9, 
   tau = 0.4
 )
 
